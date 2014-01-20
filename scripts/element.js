@@ -5,16 +5,16 @@
 tm.novel.TAG_MAP = {
     "l": function(app) {
         if (app.pointing.getPointingStart()) {
-            this.nextTask();
+            this.next();
         }
     },
     "r": function(app) {
         this.label.text += '\n';
-        this.nextTask();
+        this.next();
     },
     "cm": function(app) {
         this.label.text = '';
-        this.nextTask();
+        this.next();
     },
     "wait": function(app) {
         if (this.waitFlag == false) {
@@ -26,18 +26,39 @@ tm.novel.TAG_MAP = {
             
             if (this.activeTask.params.time <= this.waitTime) {
                 this.waitFlag = false;
-                this.nextTask();
+                this.next();
             }
         }
     },
     "alert": function(app) {
-        alert(this.activeTask.params.str);
-        this.nextTask();
+        console.log(this.activeTask.params.str);
+        this.next();
     },
     "position": function(app) {
         var params = this.activeTask.params;
         this.label.setPosition(params.x, params.y);
-        this.nextTask();
+        this.next();
+    },
+    image: function(app) {
+        var params = this.activeTask.params;
+
+        if (this.loadingFlag == false) {
+            this.loadingFlag = true;
+            var loader = tm.asset.Loader();
+            loader.onload = function() {
+                var sprite = tm.display.Sprite(params.storage);
+                this.layers[params.layer].addChild(sprite);
+                sprite.x = params.x;
+                sprite.y = params.y;
+                sprite.originX = (params.originX !== undefined) ? params.originX : 0.5;
+                sprite.originY = (params.originY !== undefined) ? params.originY : 0.5;
+                if (params.width !== undefined) sprite.width = params.width;
+                if (params.height !== undefined) sprite.height = params.height;
+                this.loadingFlag = false;
+                this.next();
+            }.bind(this);
+            loader.load(params.storage, params.storage);
+        }
     },
     image_new: function(app) {
         var params = this.activeTask.params;
@@ -47,18 +68,52 @@ tm.novel.TAG_MAP = {
             var loader = tm.asset.Loader();
             loader.onload = function() {
                 this.loadingFlag = false;
-                this.nextTask();
+                this.next();
             }.bind(this);
             loader.load(params.name, params.storage);
         }
     },
     image_show: function(app) {
         var params = this.activeTask.params;
-        var sprite = tm.display.Sprite(params.name).addChildTo(this);
+        var sprite = tm.display.Sprite(params.name);
+        this.layers[params.layer].addChild(sprite);
         
         sprite.x = params.x;
         sprite.y = params.y;
-        this.nextTask();
+        if (params.width !== undefined) sprite.width = params.width;
+        if (params.height !== undefined) sprite.height = params.height;
+        this.next();
+    },
+    delay: function(app) {
+        var params = this.activeTask.params;
+
+        this.chSpeed = (params.speed*(app.fps/1000))|0;
+        this.chSpeed = Math.max(this.chSpeed, 1);
+        this.next();
+    },
+    rect: function(app) {
+        var params = this.activeTask.params;
+        var shape = tm.display.RectangleShape(params.width, params.height, {
+            strokeStyle: "transparent",
+            fillStyle: params.color,
+        });
+        this.layers[params.layer].addChild(shape);
+        shape.x = params.x;
+        shape.y = params.y;
+
+        this.next();
+    },
+    jump: function(app) {
+        var params = this.activeTask.params;
+        this.jump(params.target);
+    },
+    reload: function() {
+        // TODO: リロード機能
+        this.script.reload();
+
+        this.script.onload = function() {
+            this.next();
+        }.bind(this);
     },
 };
 
@@ -79,20 +134,35 @@ tm.define("tm.novel.Element", {
             this.script = script;
         }
         
+        this.layers = {
+            "base": tm.display.CanvasElement().addChildTo(this),
+            "0": tm.display.CanvasElement().addChildTo(this),
+            "1": tm.display.CanvasElement().addChildTo(this),
+            "2": tm.display.CanvasElement().addChildTo(this),
+            "message0": tm.display.CanvasElement().addChildTo(this),
+            "message1": tm.display.CanvasElement().addChildTo(this),
+        };
+        this.taskIndex = 0;
         this.waitFlag = false;
         this.loadingFlag = false;
+        this.chSpeed = 1;
         
-        this.label = tm.display.Label().addChildTo(this);
+        this.label = tm.display.Label().addChildTo(this.layers.message0);
         
         this.label.x = 10;
         this.label.y = 300;
         this.label.fontSize = 16;
-        
-        this.nextTask();
+
+        this.next();
+    },
+
+    jump: function(tag) {
+        this.taskIndex = this.script.tagTable[tag];
+        this.next();
     },
     
-    nextTask: function() {
-        this.activeTask = this.script.tasks.shift();
+    next: function() {
+        this.activeTask = this.script.tasks[this.taskIndex++];
         this.seek = 0;
     },
     
@@ -102,13 +172,13 @@ tm.define("tm.novel.Element", {
         if (!task) return ;
         
         if (task.type == "text") {
-            if (app.frame % 2 == 0) {
+            if (app.frame % this.chSpeed == 0) {
                 var ch = task.value[this.seek++];
                 if (ch !== undefined) {
                     this.label.text += ch;
                 }
                 else {
-                    this.nextTask();
+                    this.next();
                 }
                 
                 if (app.pointing.getPointingStart()) {
@@ -116,7 +186,7 @@ tm.define("tm.novel.Element", {
                         var ch = task.value[i];
                         this.label.text += ch;
                     }
-                    this.nextTask();
+                    this.next();
                 }
             }
         }

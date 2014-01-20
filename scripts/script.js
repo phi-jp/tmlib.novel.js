@@ -23,13 +23,18 @@ tm.define("tm.novel.Script", {
         this.superInit();
         
         this.tasks = [];
-        
+        this.tagTable = [];
+
         if (path) {
             this.load(path);
         }
     },
     
     load: function(path) {
+        this.loaded = false;
+
+        this.path = path;
+
         tm.util.Ajax.load({
             url: path,
             dataType: "text",
@@ -41,6 +46,10 @@ tm.define("tm.novel.Script", {
             }.bind(this),
         });
     },
+
+    reload: function() {
+        this.load(this.path);
+    },
     
     parse: function(text) {
         var self = this;
@@ -50,7 +59,15 @@ tm.define("tm.novel.Script", {
         lines.each(function(line) {
             var first_char = line[0];
             if (first_char == "*") {
-                
+                var key = line.trim();
+                var taskIndex = tasks.length;
+                self.tagTable[key] = taskIndex;
+            }
+            else if (first_char == ";") {
+                // コメント
+            }
+            else if (first_char == '@') {
+                tasks.push( self._makeTag(line.substr(1)) );
             }
             else {
                 var tag_flag = false;
