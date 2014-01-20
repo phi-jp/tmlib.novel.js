@@ -6,12 +6,19 @@
 /**
  * 
  */
-tm.define("tm.kag.Element", {
+tm.define("tm.novel.Element", {
     
     superClass: "tm.display.CanvasElement",
     
-    init: function(text) {
+    init: function(script) {
         this.superInit();
+        
+        if (typeof script == "string") {
+            this.script = tm.asset.Manager.get("sample");
+        }
+        else {
+            this.script = script;
+        }
         
         this.label = tm.display.Label().addChildTo(this);
         
@@ -19,12 +26,11 @@ tm.define("tm.kag.Element", {
         this.label.y = 300;
         this.label.fontSize = 16;
         
-        this.tasks = this.parse(text);
         this.nextTask();
     },
     
     nextTask: function() {
-        this.activeTask = this.tasks.shift();
+        this.activeTask = this.script.tasks.shift();
         this.seek = 0;
     },
     
@@ -64,66 +70,5 @@ tm.define("tm.kag.Element", {
         }
     },
     
-    parse: function(text) {
-        var tasks = [];
-        var lines = text.split("\n");
-        
-        lines.each(function(line) {
-            var first_char = line[0];
-            if (first_char == "*") {
-                
-            }
-            else {
-                var tag_flag = false;
-                var tag_str = "";
-                var text = "";
-                
-                for (var i=0; i<line.length; ++i) {
-                    var ch = line[i];
-                    if (tag_flag == true) {
-                        if (ch == "]") {
-                            tasks.push({
-                                type: "tag",
-                                value: tag_str,
-                            });
-                            tag_str = "";
-                            tag_flag = false;
-                        }
-                        else {
-                            tag_str += ch;
-                        }
-                    }
-                    else if (tag_flag == false && ch == "[") {
-                        if (text != "") {
-                            tasks.push({
-                                type: "text",
-                                value: text
-                            });
-                            text = "";
-                        }
-                        tag_flag = true;
-                    }
-                    else {
-                        text+=ch;
-                    }
-                }
-                
-                if (text != "") {
-                    tasks.push({
-                        type: "text",
-                        value: text
-                    });
-                }
-            }
-        });
-        
-        console.log(tasks);
-        
-        return tasks;
-    },
-    
-    _makeTag: function(tag) {
-        
-    },
 });
 
