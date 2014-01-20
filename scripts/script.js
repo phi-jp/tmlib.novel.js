@@ -43,6 +43,7 @@ tm.define("tm.novel.Script", {
     },
     
     parse: function(text) {
+        var self = this;
         var tasks = this.tasks;
         var lines = text.split("\n");
         
@@ -60,10 +61,7 @@ tm.define("tm.novel.Script", {
                     var ch = line[i];
                     if (tag_flag == true) {
                         if (ch == "]") {
-                            tasks.push({
-                                type: "tag",
-                                value: tag_str,
-                            });
+                            tasks.push(self._makeTag(tag_str));
                             tag_str = "";
                             tag_flag = false;
                         }
@@ -100,8 +98,30 @@ tm.define("tm.novel.Script", {
         return this;
     },
     
-    _makeTag: function(tag) {
+    _makeTag: function(value) {
+        var paramsStr = value.split(' ');
+        var func = paramsStr.shift();
+        var params = {};
         
+        paramsStr.each(function(elm, index) {
+            var values = elm.split('=');
+            var key = values[0];
+            var value = values[1];
+            
+            if (!value.match(/[^0-9]+/)) {
+                value = Number(value);
+            }
+            
+            return params[key] = value;
+        });
+        
+        var tag = {
+            type: "tag",
+            func: func,
+            params: params,
+        };
+        
+        return tag;
     },
 
 });
