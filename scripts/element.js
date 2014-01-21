@@ -90,7 +90,7 @@ tm.novel.TAG_MAP = {
         
         sprite.show();
         sprite.alpha = 0;
-        sprite.tweener.clear().fadeIn();
+        sprite.tweener.clear().fadeIn(250);
         
         this.next();
     },
@@ -99,7 +99,7 @@ tm.novel.TAG_MAP = {
         var layer = this.layers[params.layer];
         var sprite = layer.getImage(params.name);
         
-        sprite.tweener.clear().fadeOut().call(function() {
+        sprite.tweener.clear().fadeOut(250).call(function() {
             sprite.hide();
         }.bind(this));
         
