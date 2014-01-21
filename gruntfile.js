@@ -6,6 +6,7 @@ module.exports = function(grunt) {
     var pkg = grunt.file.readJSON('package.json');
     var target = [
         'scripts/script.js',
+        'scripts/layer.js',
         'scripts/element.js',
     ];
     var banner = '\

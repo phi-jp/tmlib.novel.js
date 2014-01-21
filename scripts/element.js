@@ -41,47 +41,68 @@ tm.novel.TAG_MAP = {
     },
     image: function(app) {
         var params = this.activeTask.params;
-
-        if (this.loadingFlag == false) {
-            this.loadingFlag = true;
-            var loader = tm.asset.Loader();
-            loader.onload = function() {
-                var sprite = tm.display.Sprite(params.storage);
-                this.layers[params.layer].addChild(sprite);
-                sprite.x = params.x;
-                sprite.y = params.y;
-                sprite.originX = (params.originX !== undefined) ? params.originX : 0.5;
-                sprite.originY = (params.originY !== undefined) ? params.originY : 0.5;
-                if (params.width !== undefined) sprite.width = params.width;
-                if (params.height !== undefined) sprite.height = params.height;
-                this.loadingFlag = false;
-                this.next();
-            }.bind(this);
-            loader.load(params.storage, params.storage);
-        }
+        
+        this.lock();
+        
+        var loader = tm.asset.Loader();
+        loader.onload = function() {
+            var sprite = tm.display.Sprite(params.storage);
+            this.layers[params.layer].addChild(sprite);
+            sprite.x = params.x;
+            sprite.y = params.y;
+            sprite.originX = (params.originX !== undefined) ? params.originX : 0.5;
+            sprite.originY = (params.originY !== undefined) ? params.originY : 0.5;
+            if (params.width !== undefined) sprite.width = params.width;
+            if (params.height !== undefined) sprite.height = params.height;
+            this.unlock();
+            this.next();
+        }.bind(this);
+        loader.load(params.storage, params.storage);
     },
     image_new: function(app) {
         var params = this.activeTask.params;
+        var loader = tm.asset.Loader();
         
-        if (this.loadingFlag == false) {
-            this.loadingFlag = true;
-            var loader = tm.asset.Loader();
-            loader.onload = function() {
-                this.loadingFlag = false;
-                this.next();
-            }.bind(this);
-            loader.load(params.name, params.storage);
-        }
+        this.lock();
+        loader.onload = function() {
+            var sprite = tm.display.Sprite(params.name);
+            var layer = this.layers[params.layer];
+            
+            layer.addImage(params.name, sprite);
+            sprite.hide();
+            
+            this.unlock();
+            this.next();
+        }.bind(this);
+        loader.load(params.name, params.storage);
     },
     image_show: function(app) {
         var params = this.activeTask.params;
-        var sprite = tm.display.Sprite(params.name);
-        this.layers[params.layer].addChild(sprite);
+        var layer = this.layers[params.layer];
+        var sprite = layer.getImage(params.name);
         
-        sprite.x = params.x;
-        sprite.y = params.y;
+        if (params.x !== undefined) sprite.x = params.x;
+        if (params.y !== undefined) sprite.y = params.y;
+        if (params.originX !== undefined) sprite.originX = params.originX;
+        if (params.originY !== undefined) sprite.originY = params.originY;
         if (params.width !== undefined) sprite.width = params.width;
         if (params.height !== undefined) sprite.height = params.height;
+        
+        sprite.show();
+        sprite.alpha = 0;
+        sprite.tweener.clear().fadeIn();
+        
+        this.next();
+    },
+    image_hide: function(app) {
+        var params = this.activeTask.params;
+        var layer = this.layers[params.layer];
+        var sprite = layer.getImage(params.name);
+        
+        sprite.tweener.clear().fadeOut().call(function() {
+            sprite.hide();
+        }.bind(this));
+        
         this.next();
     },
     delay: function(app) {
@@ -108,10 +129,11 @@ tm.novel.TAG_MAP = {
         this.jump(params.target);
     },
     reload: function() {
-        // TODO: リロード機能
+        this.lock();
         this.script.reload();
 
         this.script.onload = function() {
+            this.unlock();
             this.next();
         }.bind(this);
     },
@@ -128,23 +150,23 @@ tm.define("tm.novel.Element", {
         this.superInit();
         
         if (typeof script == "string") {
-            this.script = tm.asset.Manager.get("sample");
+            this.script = tm.asset.Manager.get(script);
         }
         else {
             this.script = script;
         }
         
         this.layers = {
-            "base": tm.display.CanvasElement().addChildTo(this),
-            "0": tm.display.CanvasElement().addChildTo(this),
-            "1": tm.display.CanvasElement().addChildTo(this),
-            "2": tm.display.CanvasElement().addChildTo(this),
-            "message0": tm.display.CanvasElement().addChildTo(this),
-            "message1": tm.display.CanvasElement().addChildTo(this),
+            "base": tm.novel.Layer().addChildTo(this),
+            "0": tm.novel.Layer().addChildTo(this),
+            "1": tm.novel.Layer().addChildTo(this),
+            "2": tm.novel.Layer().addChildTo(this),
+            "message0": tm.novel.Layer().addChildTo(this),
+            "message1": tm.novel.Layer().addChildTo(this),
         };
         this.taskIndex = 0;
         this.waitFlag = false;
-        this.loadingFlag = false;
+        this.lockFlag = false;
         this.chSpeed = 1;
         
         this.label = tm.display.Label().addChildTo(this.layers.message0);
@@ -154,6 +176,14 @@ tm.define("tm.novel.Element", {
         this.label.fontSize = 16;
 
         this.next();
+    },
+    
+    lock: function() {
+        this.lockFlag = true;
+    },
+    
+    unlock: function() {
+        this.lockFlag = false;
     },
 
     jump: function(tag) {
@@ -167,8 +197,9 @@ tm.define("tm.novel.Element", {
     },
     
     update: function(app) {
-        var task = this.activeTask;
+        if (this.lockFlag == true) return ;
         
+        var task = this.activeTask;
         if (!task) return ;
         
         if (task.type == "text") {
