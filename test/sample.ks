@@ -16,12 +16,13 @@
 [image_show layer=1 name=tomapiyo x=100 y=250 width=200 height=200]
 [wait time=1000]
 
-[position x=20 y=350]
+[position x=20 y=330]
+
 吾輩わがはいは猫である。[delay speed=500]名前[delay speed=0]はまだ無い。[l][r]
 
 どこで生れたかとんと見当けんとうがつかぬ。[l][cm]
 
-[position x=20 y=380]
+[position x=20 y=360]
 
 ; パプリカひよこ表示
 [image_show layer=0 name=hiyoko x=360 y=250 width=200 height=200]

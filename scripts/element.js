@@ -9,11 +9,11 @@ tm.novel.TAG_MAP = {
         }
     },
     "r": function(app) {
-        this.label.text += '\n';
+        this.labelArea.text += '\n';
         this.next();
     },
     "cm": function(app) {
-        this.label.text = '';
+        this.labelArea.text = '';
         this.next();
     },
     "wait": function(app) {
@@ -36,7 +36,28 @@ tm.novel.TAG_MAP = {
     },
     "position": function(app) {
         var params = this.activeTask.params;
-        this.label.setPosition(params.x, params.y);
+        var la = this.labelArea;
+        
+        if (params.x !== undefined) la.x = params.x;
+        if (params.y !== undefined) la.y = params.y;
+        if (params.width !== undefined) la.width = params.width;
+        if (params.height !== undefined) la.height = params.height;
+        
+        // 縦書き
+        if (params.vertical === true) {
+            la.mode = "vertical";
+        }
+        
+        this.next();
+    },
+    font: function(app) {
+        var params = this.activeTask.params;
+        var la = this.labelArea;
+
+        if (params.size !== undefined) la.fontSize = params.size;
+        if (params.color !== undefined) la.fillStyle = params.color;
+        if (params.face !== undefined) la.fontFamily = params.face;
+        
         this.next();
     },
     image: function(app) {
@@ -169,11 +190,20 @@ tm.define("tm.novel.Element", {
         this.lockFlag = false;
         this.chSpeed = 1;
         
-        this.label = tm.display.Label().addChildTo(this.layers.message0);
+        this.labelArea = tm.ui.LabelArea({
+            text: "",
+            width: 430,
+            height: 200,
+        }).addChildTo(this.layers.message0);
         
-        this.label.x = 10;
-        this.label.y = 300;
-        this.label.fontSize = 16;
+        this.labelArea.text = "";
+        this.labelArea.origin.set(0, 0);
+        
+        this.labelArea = this.labelArea;
+        
+        this.labelArea.x = 10;
+        this.labelArea.y = 300;
+        this.labelArea.fontSize = 16;
 
         this.next();
     },
@@ -206,7 +236,7 @@ tm.define("tm.novel.Element", {
             if (app.frame % this.chSpeed == 0) {
                 var ch = task.value[this.seek++];
                 if (ch !== undefined) {
-                    this.label.text += ch;
+                    this.labelArea.text += ch;
                 }
                 else {
                     this.next();
@@ -215,7 +245,7 @@ tm.define("tm.novel.Element", {
                 if (app.pointing.getPointingStart()) {
                     for (var i=this.seek,len=task.value.length; i<len; ++i) {
                         var ch = task.value[i];
-                        this.label.text += ch;
+                        this.labelArea.text += ch;
                     }
                     this.next();
                 }

@@ -20,7 +20,10 @@ tm.main(function() {
     loader.onload = function() {
         app.replaceScene(MainScene());
     };
-    loader.load("sample", "sample.ks");
+    loader.load({
+        "sample": "sample.ks",
+        "novel_vertical": "novels/vertical.ks",
+    });
     
     app.run();
 });
@@ -31,22 +34,17 @@ tm.define("MainScene", {
     
     init: function() {
         this.superInit();
-        var elm = tm.novel.Element("sample").addChildTo(this);
         
+        var novel = document.location.search.substr(1) || "sample";
+        console.log("novel:", novel);
+        var elm = tm.novel.Element(novel).addChildTo(this);
     },
     onext: function() {
-    
         var loader = tm.asset.Loader();
         loader.onload = function() {
             app.replaceScene(NextScene());
         };
-        loader.load({
-            "sample": "sample.ks",
-            "sample": "sample.ks",
-            "sample": "sample.ks",
-            "sample": "sample.ks",
-        });
-
+        loader.load();
     }
 });
 

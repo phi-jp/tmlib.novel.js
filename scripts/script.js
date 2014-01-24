@@ -87,12 +87,14 @@ tm.define("tm.novel.Script", {
                         }
                     }
                     else if (tag_flag == false && ch == "[") {
-                        if (text != "") {
+                        if (tasks.last && tasks.last.type == "text") {
+                            tasks.last.value += text;
+                        }
+                        else {
                             tasks.push({
                                 type: "text",
                                 value: text
                             });
-                            text = "";
                         }
                         tag_flag = true;
                     }
@@ -102,10 +104,15 @@ tm.define("tm.novel.Script", {
                 }
                 
                 if (text != "") {
-                    tasks.push({
-                        type: "text",
-                        value: text
-                    });
+                    if (tasks.last && tasks.last.type == "text") {
+                        tasks.last.value += text;
+                    }
+                    else {
+                        tasks.push({
+                            type: "text",
+                            value: text
+                        });
+                    }
                 }
             }
         });
@@ -127,6 +134,12 @@ tm.define("tm.novel.Script", {
             
             if (!value.match(/[^0-9]+/)) {
                 value = Number(value);
+            }
+            else if (value === "true") {
+                value = true;
+            }
+            else if (value === "false") {
+                value = false;
             }
             
             return params[key] = value;
