@@ -87,16 +87,11 @@ tm.define("tm.novel.Script", {
                         }
                     }
                     else if (tag_flag == false && ch == "[") {
-                        if (tasks.last && tasks.last.type == "text") {
-                            tasks.last.value += text;
-                            text = "";
-                        }
-                        else {
-                            tasks.push({
-                                type: "text",
-                                value: text
-                            });
-                        }
+                        tasks.push({
+                            type: "text",
+                            value: text
+                        });
+                        text = "";
                         tag_flag = true;
                     }
                     else {
@@ -105,16 +100,11 @@ tm.define("tm.novel.Script", {
                 }
                 
                 if (text != "") {
-                    if (tasks.last && tasks.last.type == "text") {
-                        tasks.last.value += text;
-                        text = "";
-                    }
-                    else {
-                        tasks.push({
-                            type: "text",
-                            value: text
-                        });
-                    }
+                    tasks.push({
+                        type: "text",
+                        value: text
+                    });
+                    text = "";
                 }
             }
         });
