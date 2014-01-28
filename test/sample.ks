@@ -1,5 +1,10 @@
 *top
 
+[load name=bgm path=../assets/bgm.mp3]
+[music_play name=bgm]
+
+[load name=voice path=../assets/voice_title.m4a]
+
 [image_new name=bg layer=base storage=../assets/bg01.jpg]
 [rect layer=2 x=232 y=380 width=440 height=120 color=rgba(0,0,0,0.8)]
 
@@ -19,8 +24,10 @@
 [position x=20 y=330]
 
 吾輩わがはいは猫である。[delay speed=500]名前[delay speed=0]はまだ無い。[l][r]
+[sound_play name=voice]
 
 どこで生れたかとんと見当けんとうがつかぬ。[l][cm]
+[sound_play name=voice]
 
 [position x=20 y=360]
 

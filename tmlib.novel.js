@@ -249,6 +249,19 @@ tm.novel.TAG_MAP = {
         
         this.next();
     },
+    load: function(app) {
+        var params = this.activeTask.params;
+        
+        this.lock();
+        
+        var loader = tm.asset.Loader();
+        loader.onload = function() {
+            this.unlock();
+            this.next();
+        }.bind(this);
+        
+        loader.load(params.name, params.path);
+    },
     image: function(app) {
         var params = this.activeTask.params;
         
@@ -346,6 +359,17 @@ tm.novel.TAG_MAP = {
             this.unlock();
             this.next();
         }.bind(this);
+    },
+    
+    sound_play: function() {
+        var params = this.activeTask.params;
+        tm.asset.Manager.get(params.name).clone().play();
+        this.next();
+    },
+    music_play: function() {
+        var params = this.activeTask.params;
+        tm.asset.Manager.get(params.name).setLoop(true).play();
+        this.next();
     },
 };
 
