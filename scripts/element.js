@@ -261,18 +261,18 @@ tm.define("tm.novel.Element", {
                 var ch = task.value[this.seek++];
                 if (ch !== undefined) {
                     this.labelArea.text += ch;
+                    if (app.pointing.getPointingStart()) {
+                        for (var i=this.seek,len=task.value.length; i<len; ++i) {
+                            var ch = task.value[i];
+                            this.labelArea.text += ch;
+                        }
+                        this.next();
+                    }
                 }
                 else {
                     this.next();
                 }
                 
-                if (app.pointing.getPointingStart()) {
-                    for (var i=this.seek,len=task.value.length; i<len; ++i) {
-                        var ch = task.value[i];
-                        this.labelArea.text += ch;
-                    }
-                    this.next();
-                }
             }
         }
         else if (task.type == "tag") {

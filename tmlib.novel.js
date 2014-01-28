@@ -304,6 +304,7 @@ tm.novel.TAG_MAP = {
         var layer = this.layers[params.layer];
         var sprite = layer.getImage(params.name);
         
+        console.dir(sprite);
         if (params.x !== undefined) sprite.x = params.x;
         if (params.y !== undefined) sprite.y = params.y;
         if (params.originX !== undefined) sprite.originX = params.originX;
@@ -450,18 +451,18 @@ tm.define("tm.novel.Element", {
                 var ch = task.value[this.seek++];
                 if (ch !== undefined) {
                     this.labelArea.text += ch;
+                    if (app.pointing.getPointingStart()) {
+                        for (var i=this.seek,len=task.value.length; i<len; ++i) {
+                            var ch = task.value[i];
+                            this.labelArea.text += ch;
+                        }
+                        this.next();
+                    }
                 }
                 else {
                     this.next();
                 }
                 
-                if (app.pointing.getPointingStart()) {
-                    for (var i=this.seek,len=task.value.length; i<len; ++i) {
-                        var ch = task.value[i];
-                        this.labelArea.text += ch;
-                    }
-                    this.next();
-                }
             }
         }
         else if (task.type == "tag") {
