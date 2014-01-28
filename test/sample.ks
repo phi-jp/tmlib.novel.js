@@ -3,6 +3,8 @@
 [load name=bgm path=../assets/bgm.mp3]
 [music_play name=bgm]
 
+[font color=red]
+
 [load name=voice path=../assets/voice_title.m4a]
 
 [image_new name=bg layer=base storage=../assets/bg01.jpg]
