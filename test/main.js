@@ -23,8 +23,7 @@ tm.main(function() {
         app.replaceScene(MainScene());
     };
     loader.load({
-        "sample": "novels/test.ks",
-        "novel_vertical": "novels/vertical.ks",
+        "novel": QUERY.novel || "novels/test.ks",
     });
     
     app.run();
@@ -37,8 +36,8 @@ tm.define("MainScene", {
     init: function() {
         this.superInit();
         
-        var novel = document.location.search.substr(1) || "sample";
-        console.log("novel:", novel);
+        var novel = "novel";
+        console.log("novel:", QUERY.novel);
         var elm = tm.novel.Element(novel).addChildTo(this);
         
         var label = tm.display.Label().addChildTo(this);
