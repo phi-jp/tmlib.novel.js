@@ -80,47 +80,12 @@ tm.novel.TAG_MAP = {
         
         loader.load(data);
     },
-    image: function(app) {
-        var params = this.activeTask.params;
-        
-        this.lock();
-        
-        var loader = tm.asset.Loader();
-        loader.onload = function() {
-            var sprite = tm.display.Sprite(params.storage);
-            this.layers[params.layer].addChild(sprite);
-            sprite.x = params.x;
-            sprite.y = params.y;
-            sprite.originX = (params.originX !== undefined) ? params.originX : 0.5;
-            sprite.originY = (params.originY !== undefined) ? params.originY : 0.5;
-            if (params.width !== undefined) sprite.width = params.width;
-            if (params.height !== undefined) sprite.height = params.height;
-            this.unlock();
-            this.next();
-        }.bind(this);
-        loader.load(params.storage, params.storage);
-    },
-    image_new: function(app) {
-        var params = this.activeTask.params;
-        var loader = tm.asset.Loader();
-        
-        this.lock();
-        loader.onload = function() {
-            var sprite = tm.display.Sprite(params.name);
-            var layer = this.layers[params.layer];
-            
-            layer.addImage(params.name, sprite);
-            sprite.hide();
-            
-            this.unlock();
-            this.next();
-        }.bind(this);
-        loader.load(params.name, params.storage);
-    },
     image_show: function(app) {
         var params = this.activeTask.params;
+        var sprite = tm.display.Sprite(params.name);
         var layer = this.layers[params.layer];
-        var sprite = layer.getImage(params.name);
+        
+        layer.addImage(params.name, sprite);
         
         if (params.x !== undefined) sprite.x = params.x;
         if (params.y !== undefined) sprite.y = params.y;
@@ -142,6 +107,7 @@ tm.novel.TAG_MAP = {
         
         sprite.tweener.clear().fadeOut(250).call(function() {
             sprite.hide();
+            layer.removeImage(params.name);
         }.bind(this));
         
         this.next();
@@ -153,15 +119,31 @@ tm.novel.TAG_MAP = {
         this.chSpeed = Math.max(this.chSpeed, 1);
         this.next();
     },
-    rect: function(app) {
+    
+    shape: function(app) {
         var params = this.activeTask.params;
-        var shape = tm.display.RectangleShape(params.width, params.height, {
-            strokeStyle: "transparent",
-            fillStyle: params.color,
-        });
-        this.layers[params.layer].addChild(shape);
+        var type = params.type;
+        var layer = this.layers[params.layer];
+        var shape = null;
+        
+        switch (type) {
+            case "rect":
+                shape = tm.display.RectangleShape(params.width, params.height, {
+                    strokeStyle: "transparent",
+                    fillStyle: params.color,
+                });
+                break;
+            default :
+                debugger;
+                console.log("そんなタイプないよ!");
+                break;
+        }
+        layer.addImage(params.name, shape);
         shape.x = params.x;
         shape.y = params.y;
+        
+        shape.alpha = 0;
+        shape.tweener.clear().fadeIn(250);
 
         this.next();
     },
@@ -177,6 +159,22 @@ tm.novel.TAG_MAP = {
             this.unlock();
             this.next();
         }.bind(this);
+    },
+    
+    call: function() {
+        var params = this.activeTask.params;
+        var e = tm.event.Event("novelcall");
+        e.name = params.name;
+        
+        this.fire(e);
+        
+        this.next();
+    },
+    
+    trace: function() {
+        var params = this.activeTask.params;
+        console.log(eval(params.exp));
+        this.next();
     },
     
     sound_play: function() {
@@ -286,6 +284,7 @@ tm.define("tm.novel.Element", {
         }
         else if (task.type == "tag") {
             var func = tm.novel.TAG_MAP[task.func];
+            console.assert(func, "don't define `{0}`!".format(task.func));
             func.call(this, app);
             
             var e = tm.event.Event("taskrun");

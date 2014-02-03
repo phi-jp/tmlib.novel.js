@@ -6,12 +6,12 @@
 [font color=red]
 
 [load name=voice path=../assets/voice_title.m4a]
+[load name=bg path=../assets/bg01.jpg]
 
-[image_new name=bg layer=base storage=../assets/bg01.jpg]
-[rect layer=2 x=232 y=380 width=440 height=120 color=rgba(0,0,0,0.8)]
+[shape type=rect layer=2 x=232 y=380 width=440 height=120 color=rgba(0,0,0,0.8)]
 
-[image_new name=tomapiyo layer=1 storage=../assets/tomapiyo.png jname="とまピヨ"]
-[image_new name=hiyoko layer=0 storage=../assets/hiyoko.png jname="とまピヨ"]
+[load name=tomapiyo path=../assets/tomapiyo.png jname="とまピヨ"]
+[load name=hiyoko path=../assets/hiyoko.png jname="とまピヨ"]
 
 *start
 
@@ -24,6 +24,9 @@
 [wait time=1000]
 
 [position x=20 y=330]
+
+[trace exp=1+2]
+[call name=recordsound]
 
 吾輩わがはいは猫である。[delay speed=500]名前[delay speed=0]はまだ無い。[l][r]
 [sound_play name=voice]

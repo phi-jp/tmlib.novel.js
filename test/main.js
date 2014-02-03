@@ -7,6 +7,8 @@ var SCREEN_HEIGHT   = 465;              // スクリーン高さ
 var SCREEN_CENTER_X = SCREEN_WIDTH/2;   // スクリーン幅の半分
 var SCREEN_CENTER_Y = SCREEN_HEIGHT/2;  // スクリーン高さの半分
 
+var QUERY = tm.util.QueryString.parse(document.location.search.substr(1));
+
 /*
  * main
  */
@@ -21,7 +23,7 @@ tm.main(function() {
         app.replaceScene(MainScene());
     };
     loader.load({
-        "sample": "sample.ks",
+        "sample": "novels/test.ks",
         "novel_vertical": "novels/vertical.ks",
     });
     
@@ -52,8 +54,17 @@ tm.define("MainScene", {
         };
         
         elm.ontaskrun = function(e) {
-//            console.log(e.task.func);
+//           console.log(e.task.func);
         };
+        
+        elm.onnovelcall = function(e) {
+            switch (e.name) {
+                case "recordsound":
+                    // 録音開始
+                    console.log("レコード開始");
+                    break;
+            }
+        }
     },
     onext: function() {
         var loader = tm.asset.Loader();
