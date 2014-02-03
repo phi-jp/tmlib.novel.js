@@ -62,6 +62,7 @@ tm.novel.TAG_MAP = {
     },
     load: function(app) {
         var params = this.activeTask.params;
+        var type = params.type || params.path.split('.').last;
         
         this.lock();
         
@@ -71,7 +72,13 @@ tm.novel.TAG_MAP = {
             this.next();
         }.bind(this);
         
-        loader.load(params.name, params.path);
+        var data = {};
+        data[params.name] = {
+            path: params.path,
+            type: type,
+        };
+        
+        loader.load(data);
     },
     image: function(app) {
         var params = this.activeTask.params;
@@ -273,11 +280,17 @@ tm.define("tm.novel.Element", {
                     this.next();
                 }
                 
+                var e = tm.event.Event("textupdate");
+                this.fire(e);
             }
         }
         else if (task.type == "tag") {
             var func = tm.novel.TAG_MAP[task.func];
             func.call(this, app);
+            
+            var e = tm.event.Event("taskrun");
+            e.task = task;
+            this.fire(e);
         }
         else {
             alert();

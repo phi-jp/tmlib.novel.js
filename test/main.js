@@ -38,6 +38,22 @@ tm.define("MainScene", {
         var novel = document.location.search.substr(1) || "sample";
         console.log("novel:", novel);
         var elm = tm.novel.Element(novel).addChildTo(this);
+        
+        var label = tm.display.Label().addChildTo(this);
+        label.$extend({
+            x: 430,
+            y: 420,
+            fillStyle: "white",
+            fontSize: 24,
+        });
+        
+        elm.ontextupdate = function(e) {
+            label.text = this.labelArea.text.length;
+        };
+        
+        elm.ontaskrun = function(e) {
+//            console.log(e.task.func);
+        };
     },
     onext: function() {
         var loader = tm.asset.Loader();
