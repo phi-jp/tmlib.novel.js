@@ -4,11 +4,55 @@
     <head>
         <meta charset="UTF-8" />
         <title></title>
+        <style>
+            @font-face {
+                font-family: 'tatefont';
+                src: url('fonts/tatefont.otf');
+            }
+            
+            body {
+                font-family: 'tatefont';
+            }
+        </style>
         <script src="http://rawgithub.com/phi-jp/tmlib.js/d43a582/build/tmlib.js"></script>
         <script src="../scripts/script.js"></script>
         <script src="../scripts/layer.js"></script>
         <script src="../scripts/element.js"></script>
         <script src="main.js"></script>
+        <script>
+        
+        tm.graphics.Canvas.prototype._drawVerticalText = function(func, text, x, y) {
+            var ctx = this.context;
+            var lines = text.split('\n');
+            var charSize = this.context.measureText('あ').width;
+            
+            ctx.save();
+            
+            ctx.textAlign = "right";
+            ctx.textBaseline = "top";
+
+            Array.prototype.forEach.call(text, function(ch, j) {
+                ctx.save();
+                
+                var _x, _y;
+                
+                if (ch.match(/[　。、ー〜＝（）「」＜＞っッぁぃぅぇぉァィゥェォゃゅょャュョ]/)!=null) {
+                    // _x = ;
+                    // _y = ;
+                    ctx.font = "12px 'tatefont'";
+                }
+                // else {
+                //     _x = x;
+                //     _y = y+charSize*j;
+                // }
+                ctx[func](ch, x, y+charSize*j);
+                ctx.restore();
+            });
+            
+            ctx.restore();
+        };
+        
+        </script>
     </head>
     <body>
         <canvas id="world"></canvas>
