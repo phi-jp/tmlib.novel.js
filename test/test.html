@@ -32,20 +32,21 @@
             ctx.textBaseline = "top";
 
             Array.prototype.forEach.call(text, function(ch, j) {
-                ctx.save();
-                
                 var _x, _y;
                 
+                ctx.save();
+                
                 if (ch.match(/[　。、ー〜＝（）「」＜＞っッぁぃぅぇぉァィゥェォゃゅょャュョ]/)!=null) {
-                    // _x = ;
-                    // _y = ;
+                    _x = x;
+                    _y = y+charSize*j;
                     ctx.font = "12px 'tatefont'";
                 }
-                // else {
-                //     _x = x;
-                //     _y = y+charSize*j;
-                // }
-                ctx[func](ch, x, y+charSize*j);
+                else {
+                    _x = x;
+                    _y = y+charSize*j;
+                }
+                ctx[func](ch, _x, _y);
+                
                 ctx.restore();
             });
             

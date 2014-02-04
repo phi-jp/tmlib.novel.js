@@ -5,6 +5,9 @@
 
 [position x=20 y=20 vertical=true width=430 height=430]
 
+せっかく。
+[l][r][cm]
+
 　。、ー〜＝（）「」＜＞っッぁぃぅぇぉァィゥェォゃゅょャュョ
 [l][r][cm]
 

@@ -187,6 +187,10 @@ tm.novel.TAG_MAP = {
         tm.asset.Manager.get(params.name).setLoop(true).play();
         this.next();
     },
+    music_stop: function() {
+        var params = this.activeTask.params;
+        tm.asset.Manager.get(params.name).stop();
+    },
 };
 
 /**
