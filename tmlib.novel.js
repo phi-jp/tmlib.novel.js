@@ -311,7 +311,8 @@ tm.novel.TAG_MAP = {
         var layer = this.layers[params.layer];
         layer = layer || this.layers[1];
         var klass = tm.using(params.type);
-        var element = klass();
+        var args = tm.novel.TAG_MAP._argToArgs(params.arg);
+        var element = klass.apply(null, args);
         
         layer.addImage(params.name, element);
         
@@ -322,23 +323,7 @@ tm.novel.TAG_MAP = {
         var layer = this.layers[params.layer];
         layer = layer || this.layers[1];
         var element = layer.getImage(params.name);
-        var arg = params.arg;
-        var args = arg.split(',');
-        args.each(function(elm, index) {
-            var value = elm;
-            
-            if (!value.match(/[^0-9]+/)) {
-                value = Number(value);
-            }
-            else if (value === "true") {
-                value = true;
-            }
-            else if (value === "false") {
-                value = false;
-            }
-            
-            args[index] = value;
-        });
+        var args = tm.novel.TAG_MAP._argToArgs(params.arg);
         
         element[params.method].apply(element, args);
         
@@ -431,6 +416,28 @@ tm.novel.TAG_MAP = {
     music_stop: function() {
         var params = this.activeTask.params;
         tm.asset.Manager.get(params.name).stop();
+    },
+    
+    _argToArgs: function(arg) {
+        var args = arg.split(',');
+        
+        args.each(function(elm, index) {
+            var value = elm;
+            
+            if (!value.match(/[^0-9]+/)) {
+                value = Number(value);
+            }
+            else if (value === "true") {
+                value = true;
+            }
+            else if (value === "false") {
+                value = false;
+            }
+            
+            args[index] = value;
+        });
+        
+        return args;
     },
 };
 
