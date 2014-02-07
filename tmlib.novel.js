@@ -308,7 +308,8 @@ tm.novel.TAG_MAP = {
     
     element_new: function(app) {
         var params = this.activeTask.params;
-        var layer = this.layers[params.layer || 1];
+        var layer = this.layers[params.layer];
+        layer = layer || this.layers[1];
         var klass = tm.using(params.type);
         var element = klass();
         
@@ -318,7 +319,8 @@ tm.novel.TAG_MAP = {
     },
     element_call: function(app) {
         var params = this.activeTask.params;
-        var layer = this.layers[params.layer || 1];
+        var layer = this.layers[params.layer];
+        layer = layer || this.layers[1];
         var element = layer.getImage(params.name);
         var arg = params.arg;
         var args = arg.split(',');
