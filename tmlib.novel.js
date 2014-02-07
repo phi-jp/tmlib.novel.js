@@ -419,6 +419,8 @@ tm.novel.TAG_MAP = {
     },
     
     _argToArgs: function(arg) {
+        if (arg === undefined) return [];
+        
         var args = arg.split(',');
         
         args.each(function(elm, index) {
