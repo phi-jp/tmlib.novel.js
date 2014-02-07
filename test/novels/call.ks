@@ -1,2 +1,0 @@
-
-@trace exp="callのテストだよ"

@@ -37,9 +37,9 @@
                     url: 'novels/vertical.ks',
                 },
                 {
-                    name: 'call',
+                    name: 'trace',
                     description: 'text text text text',
-                    url: 'novels/call.ks',
+                    url: 'novels/trace.ks',
                 },
                 {
                     name: 'image',
@@ -50,6 +50,11 @@
                     name: 'sound',
                     description: 'text text text text',
                     url: 'novels/sound.ks',
+                },
+                {
+                    name: 'call',
+                    description: 'text text text text',
+                    url: 'novels/call.ks',
                 },
             ];
             $scope.reload = function(name) {
@@ -86,7 +91,7 @@
             
             <div class="row">
                 <div class="sidebar col-lg-3" ng-controller="DemoCtrl">
-                    <ol class="well affix">
+                    <ol class="well">
                         <h4 style="text-align:center;">Table of contents</h4>
                         <div ng-repeat="example in examples">
                             <li ng-click='reload();'>

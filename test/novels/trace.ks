@@ -1,0 +1,2 @@
+
+@trace exp="traceのテストだよ"
