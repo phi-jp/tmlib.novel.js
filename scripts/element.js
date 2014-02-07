@@ -3,6 +3,7 @@
  */
 
 tm.novel.TAG_MAP = {
+    // 入力待ち
     "l": function(app) {
         if (app.pointing.getPointingStart()) {
             this.next();
@@ -15,6 +16,10 @@ tm.novel.TAG_MAP = {
     "cm": function(app) {
         this.labelArea.text = '';
         this.next();
+    },
+    // 終了
+    "s": function(app) {
+        this.finish();
     },
     "wait": function(app) {
         if (this.waitFlag == false) {
@@ -37,7 +42,8 @@ tm.novel.TAG_MAP = {
     "position": function(app) {
         var params = this.activeTask.params;
         var la = this.labelArea;
-        
+
+
         if (params.x !== undefined) la.x = params.x;
         if (params.y !== undefined) la.y = params.y;
         if (params.width !== undefined) la.width = params.width;
@@ -188,6 +194,15 @@ tm.novel.TAG_MAP = {
         var params = this.activeTask.params;
         this.jump(params.target);
     },
+    call: function(app) {
+        var params = this.activeTask.params;
+
+        this.prevTaskIndex = this.taskIndex;
+        this.jump(params.target);
+    },
+    return: function(app) {
+        this.set(this.prevTaskIndex+1);
+    },
     reload: function() {
         this.lock();
         this.script.reload();
@@ -198,15 +213,18 @@ tm.novel.TAG_MAP = {
         }.bind(this);
     },
     
-    call: function() {
-        var params = this.activeTask.params;
-        var e = tm.event.Event("novelcall");
-        e.name = params.name;
+    /*
+     * TODO: 名前を変える
+     */
+    // call: function() {
+    //     var params = this.activeTask.params;
+    //     var e = tm.event.Event("novelcall");
+    //     e.name = params.name;
         
-        this.fire(e);
+    //     this.fire(e);
         
-        this.next();
-    },
+    //     this.next();
+    // },
     
     trace: function() {
         var params = this.activeTask.params;
@@ -293,13 +311,11 @@ tm.define("tm.novel.Element", {
         this.labelArea.text = "";
         this.labelArea.origin.set(0, 0);
         
-        this.labelArea = this.labelArea;
-        
-        this.labelArea.x = 10;
-        this.labelArea.y = 300;
+        this.labelArea.x = 20;
+        this.labelArea.y = 330;
         this.labelArea.fontSize = 16;
 
-        this.next();
+        this.set(0);
     },
     
     lock: function() {
@@ -311,12 +327,13 @@ tm.define("tm.novel.Element", {
     },
 
     jump: function(tag) {
-        this.taskIndex = this.script.tagTable[tag];
-        this.next();
+        var taskIndex = this.script.tagTable[tag];
+        this.set(taskIndex);
     },
-    
-    next: function() {
-        this.activeTask = this.script.tasks[this.taskIndex++];
+
+    set: function(index) {
+        this.taskIndex = index;
+        this.activeTask = this.script.tasks[this.taskIndex];
         this.seek = 0;
         
         if (!this.activeTask) {
@@ -325,12 +342,20 @@ tm.define("tm.novel.Element", {
         }
     },
     
+    next: function() {
+        this.set(this.taskIndex+1);
+    },
+
+    finish: function() {
+        this.set(this.script.tasks.length);
+    },
+    
     update: function(app) {
         if (this.lockFlag == true) return ;
         
         var task = this.activeTask;
         if (!task) return ;
-        
+
         if (task.type == "text") {
             if (app.frame % this.chSpeed == 0) {
                 var ch = task.value[this.seek++];

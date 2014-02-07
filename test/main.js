@@ -63,7 +63,11 @@ tm.define("MainScene", {
                     console.log("レコード開始");
                     break;
             }
-        }
+        };
+
+        elm.ontaskfinish = function() {
+            alert("終了");
+        };
     },
     onext: function() {
         var loader = tm.asset.Loader();
