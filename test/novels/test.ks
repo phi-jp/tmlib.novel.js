@@ -26,7 +26,7 @@
 [position x=20 y=330]
 
 [trace exp=1+2]
-[call name=recordsound]
+;[call name=recordsound]
 
 吾輩わがはいは猫である。[delay speed=500]名前[delay speed=0]はまだ無い。[l][r]
 [sound_play name=voice]

@@ -63,7 +63,7 @@ tm.define("tm.novel.Script", {
                 var taskIndex = tasks.length;
                 self.tagTable[key] = taskIndex;
             }
-            else if (first_char == ";") {
+            else if (first_char == ";" || (line[0] == "/" && line[1] == "/")) {
                 // コメント
             }
             else if (first_char == '@') {
