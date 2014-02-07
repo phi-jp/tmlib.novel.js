@@ -307,6 +307,11 @@ tm.define("tm.novel.Element", {
     next: function() {
         this.activeTask = this.script.tasks[this.taskIndex++];
         this.seek = 0;
+        
+        if (!this.activeTask) {
+            var e = tm.event.Event("taskfinish");
+            this.fire(e);
+        }
     },
     
     update: function(app) {

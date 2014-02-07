@@ -285,7 +285,9 @@ tm.novel.TAG_MAP = {
         
         sprite.show();
         sprite.alpha = 0;
-        sprite.tweener.clear().fadeIn(250);
+        sprite.tweener.clear().fadeIn(250).call(function() {
+            
+        });
         
         this.next();
     },
@@ -294,13 +296,61 @@ tm.novel.TAG_MAP = {
         var layer = this.layers[params.layer];
         var sprite = layer.getImage(params.name);
         
+        this.lock();
         sprite.tweener.clear().fadeOut(250).call(function() {
             sprite.hide();
             layer.removeImage(params.name);
+            
+            this.unlock();
+            this.next();
         }.bind(this));
+    },
+    
+    element_new: function(app) {
+        var params = this.activeTask.params;
+        var layer = this.layers[params.layer || 1];
+        var klass = tm.using(params.type);
+        var element = klass();
+        
+        layer.addImage(params.name, element);
         
         this.next();
     },
+    element_call: function(app) {
+        var params = this.activeTask.params;
+        var layer = this.layers[params.layer || 1];
+        var element = layer.getImage(params.name);
+        var arg = params.arg;
+        var args = arg.split(',');
+        args.each(function(elm, index) {
+            var value = elm;
+            
+            if (!value.match(/[^0-9]+/)) {
+                value = Number(value);
+            }
+            else if (value === "true") {
+                value = true;
+            }
+            else if (value === "false") {
+                value = false;
+            }
+            
+            args[index] = value;
+        });
+        
+        element[params.method].apply(element, args);
+        
+        this.next();
+    },
+    element_remove: function(app) {
+        var params = this.activeTask.params;
+        var layer = this.layers[params.layer || 1];
+        var element = layer.getImage(params.name);
+        layer.removeImage(params.name);
+        
+        this.next();
+    },
+    
     delay: function(app) {
         var params = this.activeTask.params;
 
@@ -312,7 +362,7 @@ tm.novel.TAG_MAP = {
     shape: function(app) {
         var params = this.activeTask.params;
         var type = params.type;
-        var layer = this.layers[params.layer];
+        var layer = this.layers[params.layer || 1];
         var shape = null;
         
         switch (type) {
@@ -446,6 +496,11 @@ tm.define("tm.novel.Element", {
     next: function() {
         this.activeTask = this.script.tasks[this.taskIndex++];
         this.seek = 0;
+        
+        if (!this.activeTask) {
+            var e = tm.event.Event("taskfinish");
+            this.fire(e);
+        }
     },
     
     update: function(app) {
