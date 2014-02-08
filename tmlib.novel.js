@@ -231,8 +231,7 @@ tm.novel.TAG_MAP = {
     "position": function(app) {
         var params = this.activeTask.params;
         var la = this.labelArea;
-
-
+        
         if (params.x !== undefined) la.x = params.x;
         if (params.y !== undefined) la.y = params.y;
         if (params.width !== undefined) la.width = params.width;
@@ -278,9 +277,8 @@ tm.novel.TAG_MAP = {
     image_show: function(app) {
         var params = this.activeTask.params;
         var sprite = tm.display.Sprite(params.name);
-        var layer = this.layers[params.layer];
         
-        layer.addImage(params.name, sprite);
+        this.addNovelElement(params.name, sprite, params.layer);
         
         if (params.x !== undefined) sprite.x = params.x;
         if (params.y !== undefined) sprite.y = params.y;
@@ -299,14 +297,11 @@ tm.novel.TAG_MAP = {
     },
     image_hide: function(app) {
         var params = this.activeTask.params;
-        var layer = this.layers[params.layer];
-        var sprite = layer.getImage(params.name);
+        var sprite = this.getNovelElement(params.name);
         
         this.lock();
         sprite.tweener.clear().fadeOut(250).call(function() {
-            sprite.hide();
-            layer.removeImage(params.name);
-            
+            this.removeNovelElement(params.name);
             this.unlock();
             this.next();
         }.bind(this));
@@ -314,21 +309,17 @@ tm.novel.TAG_MAP = {
     
     element_new: function(app) {
         var params = this.activeTask.params;
-        var layer = this.layers[params.layer];
-        layer = layer || this.layers[1];
         var klass = tm.using(params.type);
         var args = tm.novel.TAG_MAP._argToArgs(params.arg);
         var element = klass.apply(null, args);
         
-        layer.addImage(params.name, element);
+        this.addNovelElement(params.name, element, params.layer);
         
         this.next();
     },
     element_call: function(app) {
         var params = this.activeTask.params;
-        var layer = this.layers[params.layer];
-        layer = layer || this.layers[1];
-        var element = layer.getImage(params.name);
+        var element = this.getNovelElement(params.name);
         var args = tm.novel.TAG_MAP._argToArgs(params.arg);
         
         element[params.method].apply(element, args);
@@ -337,9 +328,7 @@ tm.novel.TAG_MAP = {
     },
     element_remove: function(app) {
         var params = this.activeTask.params;
-        var layer = this.layers[params.layer || 1];
-        var element = layer.getImage(params.name);
-        layer.removeImage(params.name);
+        var element = this.removeNovelElement(params.name);
         
         this.next();
     },
@@ -468,6 +457,8 @@ tm.define("tm.novel.Element", {
     
     superClass: "tm.display.CanvasElement",
     
+    elementMap: null,
+    
     init: function(script) {
         this.superInit();
         
@@ -503,6 +494,8 @@ tm.define("tm.novel.Element", {
         this.labelArea.x = 20;
         this.labelArea.y = 330;
         this.labelArea.fontSize = 16;
+        
+        this.elementMap = {};
 
         this.set(0);
     },
@@ -537,6 +530,28 @@ tm.define("tm.novel.Element", {
 
     finish: function() {
         this.set(this.script.tasks.length);
+    },
+    
+    addNovelElement: function(name, element, layerIndex) {
+        if (layerIndex === undefined) layerIndex = 1;
+        
+        var layer = this.layers[layerIndex];
+        layer.addChild(element);
+        this.elementMap[name] = element;
+        
+        return this;
+    },
+    
+    getNovelElement: function(name) {
+        var element = this.elementMap[name];
+        return element;
+    },
+    
+    removeNovelElement: function(name) {
+        var element = this.elementMap[name];
+        element.remove();
+        
+        return this;
     },
     
     update: function(app) {
