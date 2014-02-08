@@ -210,6 +210,13 @@ tm.novel.TAG_MAP = {
     "s": function(app) {
         this.finish();
     },
+    "base": function(app) {
+        var params = this.activeTask.params;
+        
+        this.basePath = params.path;
+        
+        this.next();
+    },
     "wait": function(app) {
         if (this.waitFlag == false) {
             this.waitFlag = true;
@@ -268,7 +275,7 @@ tm.novel.TAG_MAP = {
         
         var data = {};
         data[params.name] = {
-            path: params.path,
+            path: this.basePath + "/" + params.path,
             type: type,
         };
         
@@ -496,6 +503,7 @@ tm.define("tm.novel.Element", {
         this.labelArea.fontSize = 16;
         
         this.elementMap = {};
+        this.basePath = ".";
 
         this.set(0);
     },
