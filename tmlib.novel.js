@@ -403,17 +403,17 @@ tm.novel.TAG_MAP = {
     },
     
     /*
-     * TODO: 名前を変える
+     * 
      */
-    // call: function() {
-    //     var params = this.activeTask.params;
-    //     var e = tm.event.Event("novelcall");
-    //     e.name = params.name;
+    event: function() {
+        var params = this.activeTask.params;
+        var e = tm.event.Event("novelevent");
+        e.name = params.name;
         
-    //     this.fire(e);
+        this.fire(e);
         
-    //     this.next();
-    // },
+        this.next();
+    },
     
     trace: function() {
         var params = this.activeTask.params;
