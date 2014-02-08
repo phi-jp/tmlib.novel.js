@@ -85,8 +85,12 @@ tm.novel.TAG_MAP = {
         }.bind(this);
         
         var data = {};
+        var path = (this.basePath) ?
+            this.basePath + "/" + params.path : params.path;
+        
+        console.log(path);
         data[params.name] = {
-            path: this.basePath + "/" + params.path,
+            path: path,
             type: type,
         };
         
@@ -314,7 +318,7 @@ tm.define("tm.novel.Element", {
         this.labelArea.fontSize = 16;
         
         this.elementMap = {};
-        this.basePath = ".";
+        this.basePath = "";
 
         this.set(0);
     },
