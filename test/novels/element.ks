@@ -10,3 +10,7 @@
 
 [element_remove name=rect]
 
+[wait time=500]
+
+
+[s]
