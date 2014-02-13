@@ -247,6 +247,24 @@ tm.novel.TAG_MAP = {
         tm.asset.Manager.get(params.name).stop();
     },
     
+    anim: function() {
+        var params = this.activeTask.params;
+        var elm = this.getNovelElement(params.name);
+        var tweener = elm.tweener;
+        var props = {};
+        
+        
+        ["x", "y", "width", "height", "rotation", "scaleX", "scaleY"].each(function(key) {
+            if (params[key] !== undefined) {
+                props[key] = params[key];
+            }
+        });
+        
+        tweener.clear().to(props);
+        
+        this.next();
+    },
+    
     _argToArgs: function(arg) {
         if (arg === undefined) return [];
         
