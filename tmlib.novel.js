@@ -131,7 +131,7 @@ tm.define("tm.novel.Script", {
             var key = values[0];
             var value = values[1];
             
-            if (!value.match(/[^0-9]+/)) {
+            if (!value.match(/[^0-9|\-]+/)) {
                 value = Number(value);
             }
             else if (value === "true") {
@@ -140,6 +140,7 @@ tm.define("tm.novel.Script", {
             else if (value === "false") {
                 value = false;
             }
+            // value = JSON.parse('"' + value + '"');
             
             return params[key] = value;
         });
@@ -434,6 +435,42 @@ tm.novel.TAG_MAP = {
     music_stop: function() {
         var params = this.activeTask.params;
         tm.asset.Manager.get(params.name).stop();
+    },
+    
+    anim: function() {
+        var params = this.activeTask.params;
+        var elm = this.getNovelElement(params.name);
+        var tweener = elm.tweener;
+        var props = {};
+        
+        
+        ["x", "y", "width", "height", "rotation", "scaleX", "scaleY"].each(function(key) {
+            if (params[key] !== undefined) {
+                props[key] = params[key];
+            }
+        });
+        
+        tweener.clear().to(props);
+        
+        this.next();
+    },
+    
+    anim_by: function() {
+        var params = this.activeTask.params;
+        var elm = this.getNovelElement(params.name);
+        var tweener = elm.tweener;
+        var props = {};
+        
+        
+        ["x", "y", "width", "height", "rotation", "scaleX", "scaleY"].each(function(key) {
+            if (params[key] !== undefined) {
+                props[key] = params[key];
+            }
+        });
+        
+        tweener.clear().by(props);
+        
+        this.next();
     },
     
     _argToArgs: function(arg) {
