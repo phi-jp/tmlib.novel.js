@@ -29,18 +29,13 @@ tm.novel.TAG_MAP = {
         this.next();
     },
     "wait": function(app) {
-        if (this.waitFlag == false) {
-            this.waitFlag = true;
-            this.waitTime = 0;
-        }
-        else {
-            this.waitTime += (1000/app.fps);
-            
-            if (this.activeTask.params.time <= this.waitTime) {
-                this.waitFlag = false;
-                this.next();
-            }
-        }
+        this.lock();
+        
+        this.timeline.clear();
+        this.timeline.call(function() {
+            this.unlock();
+            this.next();
+        }.bind(this), this.activeTask.params.time);
     },
     "alert": function(app) {
         console.log(this.activeTask.params.str);
@@ -249,36 +244,51 @@ tm.novel.TAG_MAP = {
     
     anim: function() {
         var params = this.activeTask.params;
-        var elm = this.getNovelElement(params.name);
-        var tweener = elm.tweener;
-        var props = {};
+        var time   = params.time || 1000;
+        var easing = params.easing;
+        var elm    = this.getNovelElement(params.name);
+        var tweener= elm.tweener;
+        var props  = {};
         
         
-        ["x", "y", "width", "height", "rotation", "scaleX", "scaleY"].each(function(key) {
+        ["x", "y", "width", "height", "rotation", "scaleX", "scaleY", "alpha"].each(function(key) {
             if (params[key] !== undefined) {
                 props[key] = params[key];
             }
         });
         
-        tweener.clear().to(props);
+        tweener.clear().to(props, time, easing);
         
         this.next();
     },
     
     anim_by: function() {
         var params = this.activeTask.params;
-        var elm = this.getNovelElement(params.name);
-        var tweener = elm.tweener;
-        var props = {};
+        var time   = params.time || 1000;
+        var easing = params.easing;
+        var elm    = this.getNovelElement(params.name);
+        var tweener= elm.tweener;
+        var props  = {};
         
         
-        ["x", "y", "width", "height", "rotation", "scaleX", "scaleY"].each(function(key) {
+        ["x", "y", "width", "height", "rotation", "scaleX", "scaleY", "alpha"].each(function(key) {
             if (params[key] !== undefined) {
                 props[key] = params[key];
             }
         });
         
-        tweener.clear().by(props);
+        tweener.clear().by(props, time, easing);
+        
+        this.next();
+    },
+    
+    set: function() {
+        var params = this.activeTask.params;
+        var elm    = this.getNovelElement(params.name);
+        var key    = params.key;
+        var value  = params.value;
+        
+        elm[key] = value;
         
         this.next();
     },
@@ -336,7 +346,6 @@ tm.define("tm.novel.Element", {
             "message1": tm.novel.Layer().addChildTo(this),
         };
         this.taskIndex = 0;
-        this.waitFlag = false;
         this.lockFlag = false;
         this.chSpeed = 1;
         
@@ -413,7 +422,7 @@ tm.define("tm.novel.Element", {
         return this;
     },
     
-    update: function(app) {
+    updateTask: function(app) {
         if (this.lockFlag == true) return ;
         
         var task = this.activeTask;
@@ -448,10 +457,17 @@ tm.define("tm.novel.Element", {
             var e = tm.event.Event("taskrun");
             e.task = task;
             this.fire(e);
+            
+            // 次のタスクへ
+            this.updateTask(app);
         }
         else {
             alert();
         }
+    },
+        
+    update: function(app) {
+        this.updateTask(app);
     },
     
 });

@@ -87,11 +87,13 @@ tm.define("tm.novel.Script", {
                         }
                     }
                     else if (tag_flag == false && ch == "[") {
-                        tasks.push({
-                            type: "text",
-                            value: text
-                        });
-                        text = "";
+                        if (text != "") {
+                            tasks.push({
+                                type: "text",
+                                value: text
+                            });
+                            text = "";
+                        }
                         tag_flag = true;
                     }
                     else {
