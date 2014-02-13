@@ -5,5 +5,9 @@
 
 [wait time=1000]
 
+[anim_by name=rect x=-200 y=-200 rotation=-360 time=1000]
+
+[wait time=1000]
+
 [s]
 

@@ -124,7 +124,7 @@ tm.define("tm.novel.Script", {
             var key = values[0];
             var value = values[1];
             
-            if (!value.match(/[^0-9]+/)) {
+            if (!value.match(/[^0-9|\-]+/)) {
                 value = Number(value);
             }
             else if (value === "true") {
@@ -133,6 +133,7 @@ tm.define("tm.novel.Script", {
             else if (value === "false") {
                 value = false;
             }
+            // value = JSON.parse('"' + value + '"');
             
             return params[key] = value;
         });
