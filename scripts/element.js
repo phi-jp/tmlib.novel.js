@@ -5,9 +5,13 @@
 tm.novel.TAG_MAP = {
     // 入力待ち
     "l": function(app) {
-        if (app.pointing.getPointingStart()) {
+        this.lock();
+        this.onpointingstart = function() {
+            this.onpointingstart = null;
+            
+            this.unlock();
             this.next();
-        }
+        }.bind(this);
     },
     "r": function(app) {
         this.labelArea.text += '\n';
@@ -366,6 +370,9 @@ tm.define("tm.novel.Element", {
         this.basePath = "";
 
         this.set(0);
+        
+        this.setInteractive(true);
+        this.setBoundingType("all");
     },
     
     lock: function() {
