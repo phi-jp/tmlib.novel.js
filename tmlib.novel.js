@@ -520,7 +520,7 @@ tm.novel.TAG_MAP.$extend({
         
         this.next();
     },
-    call: function(app) {
+    exec: function(app) {
         var params = this.activeTask.params;
         var element = this.getNovelElement(params.name);
         var args = tm.novel.TAG_MAP._argToArgs(params.arg);
@@ -540,7 +540,7 @@ tm.novel.TAG_MAP.$extend({
 
 // 後方互換
 tm.novel.TAG_MAP.element_new    = tm.novel.TAG_MAP.new;
-tm.novel.TAG_MAP.element_call   = tm.novel.TAG_MAP.call;
+tm.novel.TAG_MAP.element_call   = tm.novel.TAG_MAP.exec;
 tm.novel.TAG_MAP.element_remove = tm.novel.TAG_MAP.delete;
 
 
