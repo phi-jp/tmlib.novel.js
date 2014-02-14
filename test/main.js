@@ -66,7 +66,7 @@ tm.define("MainScene", {
         };
 
         elm.ontaskfinish = function() {
-            alert("終了");
+            console.log("finish!");
         };
     },
     onext: function() {

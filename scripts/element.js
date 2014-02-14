@@ -2,6 +2,8 @@
  * 
  */
 
+
+var BASIC_PROPS = ["x", "y", "width", "height", "rotation", "scaleX", "scaleY", "alpha"];
 tm.novel.TAG_MAP = {
     // 入力待ち
     "l": function(app) {
@@ -128,32 +130,6 @@ tm.novel.TAG_MAP = {
         }.bind(this));
     },
     
-    element_new: function(app) {
-        var params = this.activeTask.params;
-        var klass = tm.using(params.type);
-        var args = tm.novel.TAG_MAP._argToArgs(params.arg);
-        var element = klass.apply(null, args);
-        
-        this.addNovelElement(params.name, element, params.layer);
-        
-        this.next();
-    },
-    element_call: function(app) {
-        var params = this.activeTask.params;
-        var element = this.getNovelElement(params.name);
-        var args = tm.novel.TAG_MAP._argToArgs(params.arg);
-        
-        element[params.method].apply(element, args);
-        
-        this.next();
-    },
-    element_remove: function(app) {
-        var params = this.activeTask.params;
-        var element = this.removeNovelElement(params.name);
-        
-        this.next();
-    },
-    
     delay: function(app) {
         var params = this.activeTask.params;
 
@@ -255,7 +231,7 @@ tm.novel.TAG_MAP = {
         var props  = {};
         
         
-        ["x", "y", "width", "height", "rotation", "scaleX", "scaleY", "alpha"].each(function(key) {
+        BASIC_PROPS.each(function(key) {
             if (params[key] !== undefined) {
                 props[key] = params[key];
             }
@@ -275,24 +251,13 @@ tm.novel.TAG_MAP = {
         var props  = {};
         
         
-        ["x", "y", "width", "height", "rotation", "scaleX", "scaleY", "alpha"].each(function(key) {
+        BASIC_PROPS.each(function(key) {
             if (params[key] !== undefined) {
                 props[key] = params[key];
             }
         });
         
         tweener.clear().by(props, time, easing);
-        
-        this.next();
-    },
-    
-    set: function() {
-        var params = this.activeTask.params;
-        var elm    = this.getNovelElement(params.name);
-        var key    = params.key;
-        var value  = params.value;
-        
-        elm[key] = value;
         
         this.next();
     },
@@ -321,6 +286,71 @@ tm.novel.TAG_MAP = {
         return args;
     },
 };
+
+
+tm.novel.TAG_MAP.$extend({
+    new: function(app) {
+        var params = this.activeTask.params;
+        var klass = tm.using(params.type);
+        var args = tm.novel.TAG_MAP._argToArgs(params.arg);
+        var element = klass.apply(null, args);
+        
+        this.addNovelElement(params.name, element, params.layer);
+
+        // by basic props
+        BASIC_PROPS.each(function(key) {
+            var value = params[key];
+            if (value !== undefined) {
+                element[key] = value;
+            }
+        });
+        
+        this.next();
+    },
+    set: function() {
+        var params  = this.activeTask.params;
+        var element = this.getNovelElement(params.name);
+        
+        // set by key and value
+        var key    = params.key;
+        var value  = params.value;
+        if (key) {
+            element[key] = value;
+        }
+
+        // set by basic props
+        BASIC_PROPS.each(function(key) {
+            var value = params[key];
+            if (value !== undefined) {
+                element[key] = value;
+            }
+        });
+        
+        this.next();
+    },
+    call: function(app) {
+        var params = this.activeTask.params;
+        var element = this.getNovelElement(params.name);
+        var args = tm.novel.TAG_MAP._argToArgs(params.arg);
+        
+        element[params.method].apply(element, args);
+        
+        this.next();
+    },
+    delete: function(app) {
+        var params = this.activeTask.params;
+        var element = this.removeNovelElement(params.name);
+        
+        this.next();
+    },
+    
+});
+
+// 後方互換
+tm.novel.TAG_MAP.element_new    = tm.novel.TAG_MAP.new;
+tm.novel.TAG_MAP.element_call   = tm.novel.TAG_MAP.call;
+tm.novel.TAG_MAP.element_remove = tm.novel.TAG_MAP.delete;
+
 
 /**
  * 
