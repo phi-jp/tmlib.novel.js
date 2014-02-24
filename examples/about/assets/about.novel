@@ -1,0 +1,47 @@
+
+// アセットをロード
+[load name=bg path=assets/bg.jpg]
+[load name=frame path=assets/frame.png]
+[load name=player path=assets/player.png]
+[load name=bgm path=assets/bgm.mp3]
+
+// 背景を表示
+[new name=bg type=tm.display.Sprite arg=bg originX=0 originY=0 width=465 height=465]
+[new name=frame layer=2 type=tm.display.Sprite arg=frame x=232 y=380 alpha=0.8]
+// 枠を表示
+
+// bgm を再生
+[music_play name=bgm]
+
+// フォントを指定
+[font color=#222]
+
+*start
+
+// プレイヤーを表示
+[new name=player type=tm.display.Sprite arg=player x=225 y=250 scaleX=0.75 scaleY=0.75 alpha=0]
+[anim name=player alpha=1 time=500]
+[wait time=1000]
+
+tmlib.novel.js は, tmlib.js でノベルゲームを
+簡単に作れるようにするためのプラグインだよ.[l]
+[cm]
+
+まだ開発途中だけどわりと動いているよ.[r][l]
+キリキリスクリプトってやつに似せて作ってあるよ.[r][l]
+でも他にも色々やれるようになっていく予定だよ.[l]
+[cm]
+
+これからガンガン開発していくよ.[r][l]
+協力してくれると嬉しいな.[l]
+[cm]
+
+// プレイヤーを非表示
+[anim name=player alpha=0 time=500]
+[wait time=1000]
+[delete name=player]
+
+// *start タグにジャンプ
+[jump target=*start]
+
+[s]
