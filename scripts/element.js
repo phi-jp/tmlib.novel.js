@@ -3,7 +3,7 @@
  */
 
 
-var BASIC_PROPS = ["x", "y", "width", "height", "rotation", "scaleX", "scaleY", "alpha"];
+var BASIC_PROPS = ["x", "y", "width", "height", "rotation", "scaleX", "scaleY", "originX", "originY", "alpha"];
 tm.novel.TAG_MAP = {
     // 入力待ち
     "l": function(app) {
