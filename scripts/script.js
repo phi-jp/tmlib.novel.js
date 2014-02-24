@@ -9,6 +9,12 @@ tm.asset.Loader.register("ks", function(path) {
     return asset;
 });
 
+// novel script
+tm.asset.Loader.register("novel", function(path) {
+    var asset = tm.novel.Script(path);
+    return asset;
+});
+
 
 /**
  * 
