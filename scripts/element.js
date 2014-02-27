@@ -30,7 +30,7 @@ tm.novel.TAG_MAP = {
     "base": function(app) {
         var params = this.activeTask.params;
         
-        this.basePath = params.path;
+        this.basePath = params.path.format(this.variables);
         
         this.next();
     },
@@ -382,6 +382,7 @@ tm.define("tm.novel.Element", {
         this.taskIndex = 0;
         this.lockFlag = false;
         this.chSpeed = 1;
+        this.variables = {};
         
         this.labelArea = tm.ui.LabelArea({
             text: "",
@@ -436,7 +437,16 @@ tm.define("tm.novel.Element", {
     finish: function() {
         this.set(this.script.tasks.length);
     },
-    
+
+    setVariable: function(key, value) {
+        this.variables[key] = value;
+        return this;
+    },
+
+    getVariable: function(key) {
+        return this.variables[key];
+    },
+
     addNovelElement: function(name, element, layerIndex) {
         if (layerIndex === undefined) layerIndex = 1;
         
