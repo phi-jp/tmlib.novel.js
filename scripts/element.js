@@ -38,10 +38,10 @@ tm.novel.TAG_MAP = {
         this.lock();
         
         this.timeline.clear();
-        this.timeline.call(function() {
+        this.timeline.call(this.activeTask.params.time, function() {
             this.unlock();
             this.next();
-        }.bind(this), this.activeTask.params.time);
+        }.bind(this));
     },
     "alert": function(app) {
         console.log(this.activeTask.params.str);
