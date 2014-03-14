@@ -70,6 +70,7 @@ tm.novel.TAG_MAP = {
         if (params.size !== undefined) la.fontSize = params.size;
         if (params.color !== undefined) la.fillStyle = params.color;
         if (params.face !== undefined) la.fontFamily = params.face;
+        if (params.lineSpace !== undefined) la.lineSpace = params.lineSpace;
         
         this.next();
     },
