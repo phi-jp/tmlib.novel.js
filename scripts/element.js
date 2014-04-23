@@ -211,7 +211,7 @@ tm.novel.TAG_MAP = {
     sound_play: function() {
         var self = this;
         var params = this.activeTask.params;
-        var sound = tm.asset.Manager.get(params.name).clone().play();
+        var sound = tm.asset.Manager.get(params.name).clone();
 
         if (params.wait === true) {
             this.lock();
@@ -223,6 +223,8 @@ tm.novel.TAG_MAP = {
         else {
             this.next();
         }
+
+        sound.play();
     },
     music_play: function() {
         var params = this.activeTask.params;
