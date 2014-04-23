@@ -209,9 +209,20 @@ tm.novel.TAG_MAP = {
     },
     
     sound_play: function() {
+        var self = this;
         var params = this.activeTask.params;
-        tm.asset.Manager.get(params.name).clone().play();
-        this.next();
+        var sound = tm.asset.Manager.get(params.name).clone().play();
+
+        if (params.wait === true) {
+            this.lock();
+            sound.onended = function() {
+                self.unlock();
+                self.next();
+            };
+        }
+        else {
+            this.next();
+        }
     },
     music_play: function() {
         var params = this.activeTask.params;
