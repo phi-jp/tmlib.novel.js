@@ -9,7 +9,7 @@
 [wait time=1000]
 
 @set name=rect width=100
-@anim_by name=rect x=-200 y=-200 rotation=-360 time=1000 alpha=-1
+@anim_by name=rect x=-200 y=-200 rotation=-360 time=1000 alpha=-0.5
 
 [wait time=1000]
 

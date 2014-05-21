@@ -138,8 +138,8 @@ tm.define("tm.novel.Script", {
             var values = elm.split('=');
             var key = values[0];
             var value = values[1];
-            
-            if (!value.match(/[^0-9|\-]+/)) {
+
+            if (value.match(/^[+-]?[0-9]*[\.]?[0-9]+$/)) {
                 value = Number(value);
             }
             else if (value === "true") {
