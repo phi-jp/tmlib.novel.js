@@ -1,6 +1,8 @@
 *top
 
-[load name=bgm path=../assets/bgm.mp3]
+[var key=bgm_path value=../assets/bgm.mp3]
+
+[load name=bgm path={bgm_path}]
 [music_play name=bgm]
 
 [font color=red]

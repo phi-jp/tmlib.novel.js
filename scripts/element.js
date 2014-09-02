@@ -76,7 +76,8 @@ tm.novel.TAG_MAP = {
     },
     load: function(app) {
         var params = this.activeTask.params;
-        var type = params.type || params.path.split('.').last;
+        var path = params.path.format(this.variables);
+        var type = params.type || path.split('.').last;
         
         this.lock();
         
@@ -88,7 +89,7 @@ tm.novel.TAG_MAP = {
         
         var data = {};
         var path = (this.basePath) ?
-            this.basePath + "/" + params.path : params.path;
+            this.basePath + "/" + path : path;
         
         console.log(path);
         data[params.name] = {
@@ -172,13 +173,10 @@ tm.novel.TAG_MAP = {
     },
     call: function(app) {
         var params = this.activeTask.params;
-
-        this.taskStack.push(this.taskIndex);
-        this.jump(params.target);
+        this.call(params.target);
     },
     return: function(app) {
-        var index = this.taskStack.pop()+1;
-        this.set(index);
+        this["return"]();
     },
     reload: function() {
         this.lock();
@@ -366,6 +364,16 @@ tm.novel.TAG_MAP.element_new    = tm.novel.TAG_MAP.new;
 tm.novel.TAG_MAP.element_call   = tm.novel.TAG_MAP.exec;
 tm.novel.TAG_MAP.element_remove = tm.novel.TAG_MAP.delete;
 
+tm.novel.TAG_MAP.$extend({
+    var: function(app) {
+        var params = this.activeTask.params;
+
+        this.variables[params.key] = params.value;
+        
+        this.next();
+    },
+});
+
 
 /**
  * 
@@ -399,7 +407,7 @@ tm.define("tm.novel.Element", {
         this.chSpeed = 1;
         this.variables = {};
         this.taskStack = [];
-        
+
         this.labelArea = tm.ui.LabelArea({
             text: "",
             width: 430,
@@ -433,6 +441,16 @@ tm.define("tm.novel.Element", {
     jump: function(tag) {
         var taskIndex = this.script.tagTable[tag];
         this.set(taskIndex);
+    },
+
+    call: function(tag) {
+        this.taskStack.push(this.taskIndex);
+        this.jump(tag);
+    },
+
+    return: function() {
+        var index = this.taskStack.pop()+1;
+        this.set(index);
     },
 
     set: function(index) {
