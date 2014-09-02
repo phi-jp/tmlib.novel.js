@@ -103,7 +103,7 @@ tm.define("tm.novel.Script", {
                         if (text != "") {
                             tasks.push({
                                 type: "text",
-                                value: text
+                                value: text.trim()
                             });
                             text = "";
                         }
@@ -117,7 +117,7 @@ tm.define("tm.novel.Script", {
                 if (text != "") {
                     tasks.push({
                         type: "text",
-                        value: text
+                        value: text.trim()
                     });
                     text = "";
                 }
@@ -371,11 +371,12 @@ tm.novel.TAG_MAP = {
     call: function(app) {
         var params = this.activeTask.params;
 
-        this.prevTaskIndex = this.taskIndex;
+        this.taskStack.push(this.taskIndex);
         this.jump(params.target);
     },
     return: function(app) {
-        this.set(this.prevTaskIndex+1);
+        var index = this.taskStack.pop()+1;
+        this.set(index);
     },
     reload: function() {
         this.lock();
@@ -595,6 +596,7 @@ tm.define("tm.novel.Element", {
         this.lockFlag = false;
         this.chSpeed = 1;
         this.variables = {};
+        this.taskStack = [];
         
         this.labelArea = tm.ui.LabelArea({
             text: "",
@@ -639,6 +641,7 @@ tm.define("tm.novel.Element", {
         if (!this.activeTask) {
             var e = tm.event.Event("taskfinish");
             this.fire(e);
+            this.flare("finish");
         }
     },
     

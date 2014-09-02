@@ -96,7 +96,7 @@ tm.define("tm.novel.Script", {
                         if (text != "") {
                             tasks.push({
                                 type: "text",
-                                value: text
+                                value: text.trim()
                             });
                             text = "";
                         }
@@ -110,7 +110,7 @@ tm.define("tm.novel.Script", {
                 if (text != "") {
                     tasks.push({
                         type: "text",
-                        value: text
+                        value: text.trim()
                     });
                     text = "";
                 }
