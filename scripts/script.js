@@ -63,6 +63,7 @@ tm.define("tm.novel.Script", {
         var lines = text.split("\n");
         
         lines.each(function(line) {
+            line = line.trim();
             var first_char = line[0];
             if (first_char == "*") {
                 var key = line.trim();
@@ -130,7 +131,7 @@ tm.define("tm.novel.Script", {
         paramsStr.each(function(elm, index) {
             var values = elm.split('=');
             var key = values[0];
-            var value = values[1];
+            var value = elm.replace(key + '=', '');
 
             if (value.match(/^[+-]?[0-9]*[\.]?[0-9]+$/)) {
                 value = Number(value);

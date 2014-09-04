@@ -70,6 +70,7 @@ tm.define("tm.novel.Script", {
         var lines = text.split("\n");
         
         lines.each(function(line) {
+            line = line.trim();
             var first_char = line[0];
             if (first_char == "*") {
                 var key = line.trim();
@@ -137,7 +138,7 @@ tm.define("tm.novel.Script", {
         paramsStr.each(function(elm, index) {
             var values = elm.split('=');
             var key = values[0];
-            var value = values[1];
+            var value = elm.replace(key + '=', '');
 
             if (value.match(/^[+-]?[0-9]*[\.]?[0-9]+$/)) {
                 value = Number(value);
@@ -497,6 +498,58 @@ tm.novel.TAG_MAP = {
         return args;
     },
 };
+
+
+tm.novel.TAG_MAP.$extend({
+    "if": function(app) {
+        var params = this.activeTask.params;
+
+        var exp = params.exp.format(this.variables);
+        var rst = eval(exp);
+
+        if (rst == true) {
+            this.next();
+        }
+        else {
+            // endif を探す
+            var tasks = this.script.tasks;
+            for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
+                var task = tasks[i];
+                if (task.func == "endif" || task.func == "elseif" || task.func == "else") {
+                    this.set(i);
+                    break;
+                }
+            }
+        }
+    },
+    "elseif": function(app) {
+        var params = this.activeTask.params;
+
+        var exp = params.exp.format(this.variables);
+        var rst = eval(exp);
+
+        if (rst == true) {
+            this.next();
+        }
+        else {
+            // endif を探す
+            var tasks = this.script.tasks;
+            for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
+                var task = tasks[i];
+                if (task.func == "endif" || task.func == "elseif" || task.func == "else") {
+                    this.set(i);
+                    break;
+                }
+            }
+        }
+    },
+    "else": function(app) {
+        this.next();
+    },
+    "endif": function(app) {
+        this.next();
+    },
+});
 
 
 tm.novel.TAG_MAP.$extend({

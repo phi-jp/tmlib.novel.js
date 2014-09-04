@@ -302,6 +302,58 @@ tm.novel.TAG_MAP = {
 
 
 tm.novel.TAG_MAP.$extend({
+    "if": function(app) {
+        var params = this.activeTask.params;
+
+        var exp = params.exp.format(this.variables);
+        var rst = eval(exp);
+
+        if (rst == true) {
+            this.next();
+        }
+        else {
+            // endif を探す
+            var tasks = this.script.tasks;
+            for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
+                var task = tasks[i];
+                if (task.func == "endif" || task.func == "elseif" || task.func == "else") {
+                    this.set(i);
+                    break;
+                }
+            }
+        }
+    },
+    "elseif": function(app) {
+        var params = this.activeTask.params;
+
+        var exp = params.exp.format(this.variables);
+        var rst = eval(exp);
+
+        if (rst == true) {
+            this.next();
+        }
+        else {
+            // endif を探す
+            var tasks = this.script.tasks;
+            for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
+                var task = tasks[i];
+                if (task.func == "endif" || task.func == "elseif" || task.func == "else") {
+                    this.set(i);
+                    break;
+                }
+            }
+        }
+    },
+    "else": function(app) {
+        this.next();
+    },
+    "endif": function(app) {
+        this.next();
+    },
+});
+
+
+tm.novel.TAG_MAP.$extend({
     new: function(app) {
         var params = this.activeTask.params;
         var klass = tm.using(params.type);
