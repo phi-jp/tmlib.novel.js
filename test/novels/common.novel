@@ -1,0 +1,10 @@
+[jump target=*common_end]
+*common_start
+
+
+*common_func
+@alert str=こもんだよー♪
+[return]
+
+
+*common_end

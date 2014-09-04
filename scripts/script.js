@@ -45,16 +45,40 @@ tm.define("tm.novel.Script", {
             url: path,
             dataType: "text",
             success: function(d) {
-                this.parse(d);
-                this.loaded = true;
-                
-                this.fire(tm.event.Event("load"));
+                this.extend(d, function(text) {
+                    this.parse(text);
+                    this.loaded = true;
+                    this.fire(tm.event.Event("load"));
+                }.bind(this));
             }.bind(this),
         });
     },
 
     reload: function() {
         this.load(this.path);
+    },
+
+    extend: function(text, fn) {
+        var ma = text.match(/[@\[]import path=(.*)/mg);
+        if (!ma || ma.length <= 0) {
+            fn && fn(text);
+            return ;
+        }
+
+        var flow = tm.util.Flow(ma.length, function() {
+            fn && fn(text);
+        });
+
+        ma.each(function(task) {
+            var cmd = task.replace(/[@\[\]]/g, '');
+            var filename = cmd.match(/path=(.*)/)[1];
+
+            var file = tm.util.File(filename);
+            file.onload = function(e) {
+                text = text.replace(task, this.data);
+                flow.pass();
+            };
+        });
     },
     
     parse: function(text) {
@@ -117,8 +141,6 @@ tm.define("tm.novel.Script", {
                 }
             }
         });
-        
-        console.log(tasks);
         
         return this;
     },

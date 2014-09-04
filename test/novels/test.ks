@@ -1,3 +1,6 @@
+@import path=novels/common.novel
+
+
 *top
 
 [var key=bgm_path value=../assets/bgm.mp3]
