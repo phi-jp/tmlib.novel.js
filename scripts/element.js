@@ -309,6 +309,16 @@ tm.novel.TAG_MAP.$extend({
         var rst = eval(exp);
 
         if (rst == true) {
+            // endif を探す
+            var tasks = this.script.tasks;
+            for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
+                var task = tasks[i];
+                if (task.func == "endif") {
+                    this.endifIndex = i;
+                    break;
+                }
+            }
+
             this.next();
         }
         else {
@@ -324,12 +334,27 @@ tm.novel.TAG_MAP.$extend({
         }
     },
     "elseif": function(app) {
+        if (this.endifIndex) {
+            this.set(endifIndex);
+            return ;
+        }
+
         var params = this.activeTask.params;
 
         var exp = params.exp.format(this.variables);
         var rst = eval(exp);
 
         if (rst == true) {
+            // endif を探す
+            var tasks = this.script.tasks;
+            for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
+                var task = tasks[i];
+                if (task.func == "endif") {
+                    this.endifIndex = i;
+                    break;
+                }
+            }
+
             this.next();
         }
         else {
@@ -345,9 +370,16 @@ tm.novel.TAG_MAP.$extend({
         }
     },
     "else": function(app) {
+        if (this.endifIndex) {
+            this.set(endifIndex);
+            return ;
+        }
+
         this.next();
     },
     "endif": function(app) {
+        this.endifIndex = null;
+
         this.next();
     },
 });
