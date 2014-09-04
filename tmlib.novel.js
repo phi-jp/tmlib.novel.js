@@ -394,6 +394,7 @@ tm.novel.TAG_MAP = {
         var params = this.activeTask.params;
         var e = tm.event.Event("novelevent");
         e.name = params.name;
+        e.params = params;
         
         this.fire(e);
         
