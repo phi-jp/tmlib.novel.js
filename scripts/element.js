@@ -512,6 +512,10 @@ tm.define("tm.novel.Element", {
 
         if (task.type == "text") {
             if (app.frame % this.chSpeed == 0) {
+                // 変数展開
+                if (this.seek == 0) {
+                    task.value = task.value.format(this.variables);
+                }
                 var ch = task.value[this.seek++];
                 if (ch !== undefined) {
                     this.labelArea.text += ch;

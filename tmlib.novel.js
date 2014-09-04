@@ -274,7 +274,8 @@ tm.novel.TAG_MAP = {
     },
     load: function(app) {
         var params = this.activeTask.params;
-        var type = params.type || params.path.split('.').last;
+        var path = params.path.format(this.variables);
+        var type = params.type || path.split('.').last;
         
         this.lock();
         
@@ -286,7 +287,7 @@ tm.novel.TAG_MAP = {
         
         var data = {};
         var path = (this.basePath) ?
-            this.basePath + "/" + params.path : params.path;
+            this.basePath + "/" + path : path;
         
         console.log(path);
         data[params.name] = {
@@ -561,6 +562,16 @@ tm.novel.TAG_MAP.element_new    = tm.novel.TAG_MAP.new;
 tm.novel.TAG_MAP.element_call   = tm.novel.TAG_MAP.exec;
 tm.novel.TAG_MAP.element_remove = tm.novel.TAG_MAP.delete;
 
+tm.novel.TAG_MAP.$extend({
+    var: function(app) {
+        var params = this.activeTask.params;
+
+        this.variables[params.key] = params.value;
+        
+        this.next();
+    },
+});
+
 
 /**
  * 
@@ -699,6 +710,10 @@ tm.define("tm.novel.Element", {
 
         if (task.type == "text") {
             if (app.frame % this.chSpeed == 0) {
+                // 変数展開
+                if (this.seek == 0) {
+                    task.value = task.value.format(this.variables);
+                }
                 var ch = task.value[this.seek++];
                 if (ch !== undefined) {
                     this.labelArea.text += ch;
