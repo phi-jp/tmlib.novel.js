@@ -292,6 +292,7 @@ tm.novel.TAG_MAP = {
         if (params.color !== undefined) la.fillStyle = params.color;
         if (params.face !== undefined) la.fontFamily = params.face;
         if (params.lineSpace !== undefined) la.lineSpace = params.lineSpace;
+        if (params.lineHeight !== undefined) la.lineHeight = params.lineHeight;
         
         this.next();
     },
