@@ -279,6 +279,8 @@ tm.novel.TAG_MAP = {
     
     _argToArgs: function(arg) {
         if (arg === undefined) return [];
+
+        if (typeof arg == "number") return [arg];
         
         var args = arg.split(',');
         
@@ -337,7 +339,7 @@ tm.novel.TAG_MAP.$extend({
     },
     "elseif": function(app) {
         if (this.endifIndex) {
-            this.set(endifIndex);
+            this.set(this.endifIndex);
             return ;
         }
 
@@ -373,7 +375,7 @@ tm.novel.TAG_MAP.$extend({
     },
     "else": function(app) {
         if (this.endifIndex) {
-            this.set(endifIndex);
+            this.set(this.endifIndex);
             return ;
         }
 
@@ -391,7 +393,9 @@ tm.novel.TAG_MAP.$extend({
     new: function(app) {
         var params = this.activeTask.params;
         var klass = tm.using(params.type);
-        var args = tm.novel.TAG_MAP._argToArgs(params.arg);
+        var arg = (typeof params.arg == 'string') ?
+            params.arg.format(this.variables) : params.arg;
+        var args = tm.novel.TAG_MAP._argToArgs(arg);
         var element = klass.apply(null, args);
         
         this.addNovelElement(params.name, element, params.layer);
@@ -453,8 +457,9 @@ tm.novel.TAG_MAP.element_remove = tm.novel.TAG_MAP.delete;
 tm.novel.TAG_MAP.$extend({
     var: function(app) {
         var params = this.activeTask.params;
+        var value = params.value;
 
-        this.variables[params.key] = params.value;
+        this.variables[params.key] = value;
         
         this.next();
     },
