@@ -30,6 +30,7 @@ tm.define("tm.novel.Script", {
         
         this.tasks = [];
         this.tagTable = [];
+        this.macros = {};
 
         if (path) {
             this.load(path);
@@ -174,6 +175,10 @@ tm.define("tm.novel.Script", {
             func: func,
             params: params,
         };
+
+        if (func == "macro") {
+            this.macros[params.name] = tag;
+        }
         
         return tag;
     },

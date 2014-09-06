@@ -37,6 +37,7 @@ tm.define("tm.novel.Script", {
         
         this.tasks = [];
         this.tagTable = [];
+        this.macros = {};
 
         if (path) {
             this.load(path);
@@ -181,6 +182,10 @@ tm.define("tm.novel.Script", {
             func: func,
             params: params,
         };
+
+        if (func == "macro") {
+            this.macros[params.name] = tag;
+        }
         
         return tag;
     },
@@ -610,6 +615,27 @@ tm.novel.TAG_MAP.$extend({
 });
 
 
+
+tm.novel.TAG_MAP.$extend({
+    "macro": function(app) {
+        // 直近の endmacro を探す
+        var tasks = this.script.tasks;
+        for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
+            var task = tasks[i];
+            if (task.func == "endmacro") {
+                this.set(i);
+                break;
+            }
+        }
+        this.next();
+    },
+    "endmacro": function(app) {
+        this['return']();
+    },
+});
+
+
+
 tm.novel.TAG_MAP.$extend({
     new: function(app) {
         var params = this.activeTask.params;
@@ -718,6 +744,7 @@ tm.define("tm.novel.Element", {
         this.lockFlag = false;
         this.chSpeed = 1;
         this.variables = {};
+        this.localVariablesStack = [];
         this.taskStack = [];
 
         this.labelArea = tm.ui.LabelArea({
@@ -740,27 +767,36 @@ tm.define("tm.novel.Element", {
         
         this.setInteractive(true);
         this.setBoundingType("all");
+
+        console.log(this.script);
     },
     
     lock: function() {
         this.lockFlag = true;
+        return this;
     },
     
     unlock: function() {
         this.lockFlag = false;
+        return this;
     },
 
     jump: function(tag) {
-        var taskIndex = this.script.tagTable[tag];
+        var taskIndex = (typeof tag == 'string') ?
+            this.script.tagTable[tag] : tag;
         this.set(taskIndex);
+        return this;
     },
 
     call: function(tag) {
+        this.localVariablesStack.push(this.activeTask.params);
         this.taskStack.push(this.taskIndex);
         this.jump(tag);
+        return this;
     },
 
     return: function() {
+        this.localVariablesStack.pop();
         var index = this.taskStack.pop()+1;
         this.set(index);
     },
@@ -783,6 +819,12 @@ tm.define("tm.novel.Element", {
 
     finish: function() {
         this.set(this.script.tasks.length);
+    },
+
+    format: function(str) {
+        var localVariables = this.localVariablesStack.last;
+
+        return str.format(localVariables).format(this.variables);
     },
 
     setVariable: function(key, value) {
@@ -826,7 +868,7 @@ tm.define("tm.novel.Element", {
             if (app.frame % this.chSpeed == 0) {
                 // 変数展開
                 if (this.seek == 0) {
-                    task.value = task.value.format(this.variables);
+                    task.value = this.format(task.value);
                 }
                 var ch = task.value[this.seek++];
                 if (ch !== undefined) {
@@ -848,13 +890,24 @@ tm.define("tm.novel.Element", {
             }
         }
         else if (task.type == "tag") {
-            var func = tm.novel.TAG_MAP[task.func];
-            console.assert(func, "don't define `{0}`!".format(task.func));
-            func.call(this, app);
-            
-            var e = tm.event.Event("taskrun");
-            e.task = task;
-            this.fire(e);
+            // タグ
+            if (tm.novel.TAG_MAP[task.func]) {
+                var func = tm.novel.TAG_MAP[task.func];
+                func.call(this, app);
+            }
+            // 自作タグ(マクロ)
+            else if (this.script.macros[task.func]) {
+                var macro = this.script.macros[task.func];
+                var i = this.script.tasks.indexOf(macro);
+                this.call(i).next();
+            }
+            else {
+                console.assert(func, "don't define `{0}`!".format(task.func));
+            }
+
+            this.flare("taskrun", {
+                task: task,
+            });
             
             // 次のタスクへ
             this.updateTask(app);
