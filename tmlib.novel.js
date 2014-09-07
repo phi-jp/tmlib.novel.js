@@ -522,7 +522,7 @@ tm.define("tm.novel.Element", {
 	    },
 
 	    "if": function(app, params) {
-	        var exp = params.exp.format(this.variables);
+	        var exp = params.exp;
 	        var rst = eval(exp);
 
 	        if (rst == true) {
