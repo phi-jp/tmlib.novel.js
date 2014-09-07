@@ -1,5 +1,21 @@
 @import path=novels/common.novel
 
+[macro name=hoge]
+
+	hoge {num}
+	[hoge2 num=500]
+
+[endmacro]
+
+
+[macro name=hoge2]
+
+	hoge2 {num}
+
+[endmacro]
+
+[hoge num=100]
+
 
 *top
 
@@ -53,8 +69,12 @@
 [image_hide layer=0 name=hiyoko]
 [wait time=1000 hoge='abc']
 
-[alert str="finish!"]
+[log message="finish!"]
 
 [cm]
 
 @jump target=*start
+
+
+
+

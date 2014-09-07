@@ -8,6 +8,12 @@ module.exports = function(grunt) {
         'scripts/script.js',
         'scripts/layer.js',
         'scripts/element.js',
+
+        'scripts/tag/core.js',
+        'scripts/tag/text.js',
+        'scripts/tag/asset.js',
+        'scripts/tag/object.js',
+        'scripts/tag/sound.js',
     ];
     var banner = '\
 /*\n\

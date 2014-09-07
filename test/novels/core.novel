@@ -1,0 +1,46 @@
+
+// log test
+[log msg=logtest]
+
+// alert test
+//[alert msg=alerttest]
+
+// var test
+[var key=hoge value=100]
+[log msg=hoge={hoge}]
+
+// if, else if, else, endif test
+[if exp={hoge}==101]
+	[log msg=hogeは101]
+[elseif exp={hoge}==100]
+	[log msg=hogeは100]
+[else]
+	[log msg=hogeは101,100以外]
+[endif]
+
+// macro test
+[macro name=userfunc1]
+
+	[log msg=userfunc1:v={v}]
+	[userfunc2 v=200]
+
+[endmacro]
+
+[macro name=userfunc2]
+
+	[log msg=userfunc2:v={v}]
+
+[endmacro]
+
+[userfunc1 v=100]
+
+// l test
+[l]
+
+// wait test
+[wait time=1000]
+
+// s test
+[s]
+
+
