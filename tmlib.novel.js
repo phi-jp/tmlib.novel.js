@@ -343,11 +343,8 @@ tm.define("tm.novel.Element", {
         if (typeof value !== 'string') return value;
         var temp = value;
 
-        var localVariables = this.localVariablesStack.last;
-        if (localVariables) {
-            value = value.format(localVariables);
-        }
-        value = value.format(this.variables);
+        var variables = {}.$extend(this.variables, this.localVariablesStack.last);
+        value = value.format(variables);
 
         if (value.match(/^[+-]?[0-9]*[\.]?[0-9]+$/)) {
             value = Number(value);
