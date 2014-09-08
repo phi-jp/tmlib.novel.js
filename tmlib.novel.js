@@ -286,8 +286,6 @@ tm.define("tm.novel.Element", {
         
         this.setInteractive(true);
         this.setBoundingType("all");
-
-        console.log(this.script);
     },
     
     lock: function() {
