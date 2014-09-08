@@ -71,7 +71,7 @@
 	            for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
 	                var task = tasks[i];
 	                if (task.func == "endif") {
-	                    this.endifIndex = i;
+	                	this.endifStack.push(i);
 	                    break;
 	                }
 	            }
@@ -91,10 +91,10 @@
 	        }
 	    },
 	    "elseif": function(app, params) {
-	        if (this.endifIndex) {
-	            this.set(this.endifIndex);
+	    	if (this.endifStack.last) {
+	            this.set(this.endifStack.last);
 	            return ;
-	        }
+	    	}
 
 	        var exp = params.exp;
 	        var rst = eval(exp);
@@ -105,7 +105,7 @@
 	            for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
 	                var task = tasks[i];
 	                if (task.func == "endif") {
-	                    this.endifIndex = i;
+	                	this.endifStack.push(i);
 	                    break;
 	                }
 	            }
@@ -125,15 +125,15 @@
 	        }
 	    },
 	    "else": function(app, params) {
-	        if (this.endifIndex) {
-	            this.set(this.endifIndex);
+	    	if (this.endifStack.last) {
+	            this.set(this.endifStack.last);
 	            return ;
-	        }
-
+	    	}
+	    	
 	        this.next();
 	    },
 	    "endif": function(app, params) {
-	        this.endifIndex = null;
+	    	this.endifStack.pop();
 
 	        this.next();
 	    },

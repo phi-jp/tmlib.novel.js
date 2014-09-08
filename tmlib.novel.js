@@ -264,6 +264,7 @@ tm.define("tm.novel.Element", {
         this.variables = {};
         this.localVariablesStack = [];
         this.taskStack = [];
+        this.endifStack = [];
 
         this.labelArea = tm.ui.LabelArea({
             text: "",
@@ -543,7 +544,7 @@ tm.define("tm.novel.Element", {
 	            for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
 	                var task = tasks[i];
 	                if (task.func == "endif") {
-	                    this.endifIndex = i;
+	                	this.endifStack.push(i);
 	                    break;
 	                }
 	            }
@@ -563,10 +564,10 @@ tm.define("tm.novel.Element", {
 	        }
 	    },
 	    "elseif": function(app, params) {
-	        if (this.endifIndex) {
-	            this.set(this.endifIndex);
+	    	if (this.endifStack.last) {
+	            this.set(this.endifStack.last);
 	            return ;
-	        }
+	    	}
 
 	        var exp = params.exp;
 	        var rst = eval(exp);
@@ -577,7 +578,7 @@ tm.define("tm.novel.Element", {
 	            for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
 	                var task = tasks[i];
 	                if (task.func == "endif") {
-	                    this.endifIndex = i;
+	                	this.endifStack.push(i);
 	                    break;
 	                }
 	            }
@@ -597,15 +598,15 @@ tm.define("tm.novel.Element", {
 	        }
 	    },
 	    "else": function(app, params) {
-	        if (this.endifIndex) {
-	            this.set(this.endifIndex);
+	    	if (this.endifStack.last) {
+	            this.set(this.endifStack.last);
 	            return ;
-	        }
-
+	    	}
+	    	
 	        this.next();
 	    },
 	    "endif": function(app, params) {
-	        this.endifIndex = null;
+	    	this.endifStack.pop();
 
 	        this.next();
 	    },

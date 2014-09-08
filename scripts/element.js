@@ -38,6 +38,7 @@ tm.define("tm.novel.Element", {
         this.variables = {};
         this.localVariablesStack = [];
         this.taskStack = [];
+        this.endifStack = [];
 
         this.labelArea = tm.ui.LabelArea({
             text: "",
