@@ -65,7 +65,7 @@
 	        var exp = params.exp;
 	        var rst = eval(exp);
 
-	        if (rst == true) {
+	        if (!!rst == true) {
 	            // endif を探す
 	            var tasks = this.script.tasks;
 	            for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
@@ -96,10 +96,10 @@
 	            return ;
 	        }
 
-	        var exp = params.exp.format(this.variables);
+	        var exp = params.exp;
 	        var rst = eval(exp);
 
-	        if (rst == true) {
+	        if (!!rst == true) {
 	            // endif を探す
 	            var tasks = this.script.tasks;
 	            for (var i=this.taskIndex+1,len=tasks.length; i<len; ++i) {
