@@ -41,6 +41,13 @@
 	        this.next();
 	    },
 
+	    "debug": function(app, params) {
+	    	var message = params.message || params.msg;
+	        console.debug(message);
+	        debugger;
+	        this.next();
+	    },
+
 	    // TODO: 削除するかも
 	    "trace": function(app, params) {
 	        console.log(eval(params.exp));

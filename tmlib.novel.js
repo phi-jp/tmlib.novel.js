@@ -363,6 +363,12 @@ tm.define("tm.novel.Element", {
         return value;
     },
 
+    macro: function(name) {
+        var macro = this.script.macros[name];
+        var i = this.script.tasks.indexOf(macro);
+        this.call(i).next();
+    },
+
     setVariable: function(key, value) {
         this.variables[key] = value;
         return this;
@@ -428,27 +434,26 @@ tm.define("tm.novel.Element", {
         else if (task.type == "tag") {
             // タグ
             var func = tm.novel.Tag.get(task.func);
+            var params = {};
+
             if (func) {
-                var params = {};
                 for (var key in task.params) {
                     var param = task.params[key];
                     params[key] = this.format(param);
                 }
                 func.call(this, app, params);
+
+                this.flare("taskrun", {
+                    task: task,
+                });
             }
             // 自作タグ(マクロ)
             else if (this.script.macros[task.func]) {
-                var macro = this.script.macros[task.func];
-                var i = this.script.tasks.indexOf(macro);
-                this.call(i).next();
+                this.macro(task.func);
             }
             else {
                 console.assert(func, "don't define `{0}`!".format(task.func));
             }
-
-            this.flare("taskrun", {
-                task: task,
-            });
             
             // 次のタスクへ
             this.updateTask(app);
@@ -505,6 +510,13 @@ tm.define("tm.novel.Element", {
 	    "alert": function(app, params) {
 	    	var message = params.message || params.msg;
 	        alert(message);
+	        this.next();
+	    },
+
+	    "debug": function(app, params) {
+	    	var message = params.message || params.msg;
+	        console.debug(message);
+	        debugger;
 	        this.next();
 	    },
 
