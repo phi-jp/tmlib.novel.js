@@ -65,7 +65,7 @@ tm.define("tm.novel.Script", {
             fn && fn(text);
             return ;
         }
-
+        var query = this.path.split('?').last;
         var flow = tm.util.Flow(ma.length, function() {
             fn && fn(text);
         });
@@ -73,6 +73,10 @@ tm.define("tm.novel.Script", {
         ma.each(function(task) {
             var cmd = task.replace(/[@\[\]]/g, '');
             var filename = cmd.match(/path=(.*)/)[1];
+
+            if (query) {
+                filename += '?' + query;
+            }
 
             var file = tm.util.File(filename);
             file.onload = function(e) {
