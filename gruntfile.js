@@ -14,6 +14,7 @@ module.exports = function(grunt) {
         'scripts/tag/asset.js',
         'scripts/tag/object.js',
         'scripts/tag/sound.js',
+        'scripts/tag/select.js',
     ];
     var banner = '\
 /*\n\
